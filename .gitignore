@@ -1,0 +1,48 @@
+# dependencies
+node_modules
+
+# build output
+.next
+out
+build
+tsconfig.tsbuildinfo
+next-env.d.ts
+
+# secrets — never commit these
+.env
+.env*.local
+
+# local SQLite database and its working files
+*.db
+*.db-wal
+*.db-shm
+*.db-journal
+
+# vendored toolchains and archives (a local Node runtime, downloaded installers)
+.tools/
+*.zip
+*.7z
+*.msi
+
+# editor / OS
+.DS_Store
+Thumbs.db
+.idea
+.vscode/*
+!.vscode/settings.json
+
+# hosting
+.vercel
+
+# manual build artefacts. The source is docs/manual/manual.html and the finished
+# PDF is committed; the figures are screenshots of a running console and are
+# recaptured by `npm run manual`, so keeping them here would be storing 6MB of
+# something a command regenerates.
+docs/manual/figures/
+docs/manual/built.html
+
+# the social cards are generated from PACKS and the timetable by `npm run social`,
+# so the PNGs are output rather than source. The script is the thing to keep.
+docs/social/
+backups/
+rg-last-backup.json

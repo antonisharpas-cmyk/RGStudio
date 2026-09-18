@@ -1,0 +1,261 @@
+# Render Blueprint for the RG Pilates Studio website.
+#
+# One Web Service, one persistent disk. Nothing else: the database is SQLite in a
+# file, the reminder sweep runs inside the app on its own timer, and there is
+# nothing to cache. Adding Postgres or a background worker would be adding parts
+# this app does not have.
+#
+# To use it: Render dashboard → Blueprints → New Blueprint Instance → pick this
+# repository. Render reads this file and creates the service. Everything marked
+# `sync: false` is a secret, so Render asks for it once at that point and stores
+# it itself; none of them are in this file and none of them are in git.
+#
+# Editing this file later and pushing updates the service. Two exceptions worth
+# knowing: changing `region` or the disk means Render replaces the service rather
+# than updating it, so decide those once.
+services:
+  - type: web
+    name: rg-pilates
+    runtime: node
+    # Frankfurt is Render's closest region to Cyprus. Oregon is the default and
+    # would add roughly 150ms to every request from Larnaca.
+    region: frankfurt
+    # Formerly called Starter. The build runs on separate compute, so this is
+    # only what the running site needs: a small Next.js server with a SQLite file
+    # sits well inside it. Move up to 1c-2g if the logs ever show a restart with
+    # "out of memory". The free plan cannot hold a disk, which rules it out.
+    plan: 0.5c-512mb
+    # `--include=dev` is not optional here, and it is not about the build.
+    # drizzle-kit and tsx are devDependencies, and scripts/boot.mjs needs both of
+    # them at RUNTIME to create the database on the first boot. npm omits
+    # devDependencies whenever NODE_ENV is production, so a stray NODE_ENV would
+    # otherwise leave the container without them and the first boot would fail
+    # with "drizzle-kit: not found" — after a green build. This says the quiet
+    # part out loud so it cannot be undone by an environment variable.
+    buildCommand: npm ci --include=dev && npm run build
+    # `npm start` runs this too, so the platform default is already correct and
+    # a forgotten dashboard field cannot break the deploy. Spelled out here
+    # because a blueprint should say what it does. The disk is not mounted during
+    # the build, so the first boot on a new disk has to create the database
+    # before serving: see the comment at the top of scripts/boot.mjs.
+    startCommand: npm run start:render
+    healthCheckPath: /
+    # Everything the studio owns lives in this one file. Without the disk, the
+    # filesystem is rebuilt on every deploy and every member, booking, payment
+    # and ledger line is deleted.
+    disk:
+      name: rg-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      # ---------------------------------------------------------------- basics
+      # A FILE PATH, not a connection string. `src/db/index.ts` strips `file:`
+      # and hands the rest to SQLite as a filename.
+      #
+      # Never put a postgresql:// URL here. It does not fail: SQLite creates a
+      # new empty database in a directory literally named `postgresql:` on the
+      # container's temporary filesystem and the site serves from that, looking
+      # perfectly healthy while the real data sits untouched on the disk and
+      # every new booking is deleted at the next restart. That happened on
+      # 3 September 2026. To browse the data in Postgres, use MIRROR_DATABASE_URL
+      # below and `npm run db:mirror`.
+      - key: DATABASE_URL
+        value: file:/var/data/rg.db
+      # Optional. The Postgres database `npm run db:mirror` copies the data into
+      # so it can be browsed in Render's dashboard, described in
+      # docs/database.md. Nothing about the website depends on it: unset, only
+      # the mirror script stops working. Set it by hand in the dashboard to the
+      # Postgres service's Internal Database URL, which is why it is commented
+      # out here rather than `sync: false` — a blueprint prompt for a variable
+      # most deploys do not need is a prompt people click past.
+      # - key: MIRROR_DATABASE_URL
+      #   sync: false
+      - key: NODE_VERSION
+        # Matches .node-version and the studio's own machine. better-sqlite3 is
+        # a native module, and a matching Node major means a prebuilt binary
+        # instead of a compile from source on every deploy.
+        value: 22.23.2
+      - key: NEXT_PUBLIC_SITE_URL
+        # Baked into the browser bundle at build time, so it has to be right
+        # before the first build, not after. Set it to the custom domain from the
+        # start if there is going to be one.
+        sync: false
+      - key: PROMO_ENABLED
+        value: "false"
+      # Nothing to set for the cache buster: `next.config.ts` reads Render's own
+      # RENDER_GIT_COMMIT and stamps it onto every asset request, so each deploy
+      # gets its own asset URLs. Named here only so nobody wonders where the
+      # ?dpl= in the page source comes from.
+      # Deliberately NOT setting NODE_ENV. Next sets it for itself when it
+      # serves, and setting it here would reach npm as well: devDependencies
+      # would be skipped, and drizzle-kit and tsx are needed at runtime by the
+      # first-boot script. The demo member is kept off production by
+      # SEED_DEMO_MEMBER below rather than by guessing at NODE_ENV.
+      - key: SEED_DEMO_MEMBER
+        value: "false"
+
+      # -------------------------------------------------- reminders and push
+      # Without CRON_SECRET the sweep refuses itself and no reminder is ever
+      # sent, silently. Generate all three with `npm run push:keys`.
+      - key: CRON_SECRET
+        generateValue: true
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      # Not a secret and not a contact address anybody reads: the push services
+      # want a way to reach whoever is sending, if a batch of notifications
+      # starts misbehaving. The studio's own mailbox is the honest answer.
+      - key: VAPID_SUBJECT
+        value: mailto:info@rgpilatesstudio.com
+      - key: AUTH_SECRET
+        generateValue: true
+
+      # ------------------------------------------------------------------ email
+      #
+      # Without this the confirmation code never arrives and nobody can finish
+      # registering, so it is the first thing to get right.
+      #
+      # `smtp` signs in to a mailbox the studio already owns and sends as it.
+      # Chosen over Resend and Brevo because those verify a sending *domain*
+      # with DNS records first, which is the better answer eventually and the
+      # wrong answer on a Tuesday afternoon. Nothing about the domain changes
+      # and no third company holds a copy of the studio's mail.
+      #
+      # One thing to know about the host: Render blocks outbound SMTP on free
+      # instances. This service is paid (a disk requires it), so 465 is open.
+      # If email ever stops working right after an instance-type change, that
+      # is the first thing to check.
+      - key: EMAIL_PROVIDER
+        value: smtp
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        # 465 is implicit TLS, which the transport infers from the port, so
+        # SMTP_SECURE does not need setting.
+        value: "465"
+      # The studio's mailbox. An address, not a secret, so it is written here
+      # rather than left for somebody to type into a panel and mistype.
+      - key: SMTP_USER
+        value: info@rgpilatesstudio.com
+      # A Google **app password**, not the mailbox's own password: sixteen
+      # characters, generated at myaccount.google.com/apppasswords with 2-step
+      # verification switched on. Google refuses a normal password here.
+      #
+      # This is the only email setting that is a secret, and the only one left
+      # to the dashboard.
+      - key: SMTP_PASS
+        sync: false
+      # Shown as the sender. Has to be the mailbox above, or an alias Google
+      # has been told it may send as, or Gmail rewrites it.
+      - key: EMAIL_FROM
+        value: "RG Pilates Studio <info@rgpilatesstudio.com>"
+      - key: STUDIO_OPS_EMAIL
+        value: info@rgpilatesstudio.com
+
+      # ------------------------------------------------------------------ money
+      - key: PAYMENT_PROVIDER
+        value: stripe
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+        sync: false
+      # Stripe gives you this when you create the webhook endpoint, which you can
+      # only do once the service has a URL. So: deploy, add the endpoint in
+      # Stripe pointing at https://<the site>/api/stripe/webhook, then paste the
+      # secret here. Until then a paid pack never lands in a member's balance.
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: ALLOW_TEST_PAYMENTS
+        value: "false"
+
+      # ---------------------------------------------------------- the invoice
+      # What prints on the VAT invoice attached to every card payment. Facts
+      # about a company, so they live here and not in the code. While any of
+      # them is missing or still a placeholder, every invoice is stamped
+      # SPECIMEN and consumes no invoice number — see src/lib/invoice.ts for
+      # why that is the safe default rather than an inconvenience.
+      - key: INVOICE_LEGAL_NAME
+        sync: false
+      - key: INVOICE_ADDRESS
+        value: Patron 30, Larnaca 6051, Cyprus
+      # CY + eight digits + one letter.
+      - key: INVOICE_VAT_NUMBER
+        sync: false
+      - key: INVOICE_REG_NUMBER
+        sync: false
+      # A percentage: 19 means 19%. Confirm the rate with the accountant.
+      - key: INVOICE_VAT_RATE
+        sync: false
+      - key: INVOICE_EMAIL
+        value: info@rgpilatesstudio.com
+      - key: INVOICE_PHONE
+        sync: false
+
+      # -------------------------------------------------------------------- SMS
+      - key: SMS_PROVIDER
+        value: smsto
+      - key: SMSTO_API_KEY
+        sync: false
+      - key: SMS_SENDER
+        sync: false
+      # Dialling DIGITS, not a country. This said `CY` for a while, and `CY` is
+      # pasted straight in front of the number: a member who typed 99649052
+      # became +CY99649052, which the gateway refuses. Cyprus is 357.
+      - key: SMS_DEFAULT_COUNTRY
+        value: "357"
+
+      # -------------------------------------------------- backups to Drive
+      # Off until these are set. The site runs fine without them; what is missing
+      # is the copy of the database in the studio's own Google Drive. The whole
+      # setup is walked through in docs/backup.md — create one OAuth client in
+      # Google, run `npm run drive:auth` once to get the refresh token, paste the
+      # three values here. Every six hours the server then snapshots the database
+      # and uploads it, owned by the company, into a folder in their Drive.
+      #
+      # The refresh token and the client secret are secrets and stay in the
+      # dashboard. The client id is not really a secret but lives with them so the
+      # three are set together or not at all: any one missing means no backup, and
+      # the log says which.
+      - key: GDRIVE_CLIENT_ID
+        sync: false
+      - key: GDRIVE_CLIENT_SECRET
+        sync: false
+      - key: GDRIVE_REFRESH_TOKEN
+        sync: false
+      # The folder the backups go into, created on first use. A plain name, not a
+      # secret. One studio per Google account, so the default is fine; give each
+      # company its own name only if several ever share one Drive.
+      - key: BACKUP_FOLDER_NAME
+        value: RG Pilates Studio backups
+      # How often, in hours. Six is four copies a day. Floored at one in code so a
+      # typo cannot hammer Google.
+      - key: BACKUP_INTERVAL_HOURS
+        value: "6"
+      # How many copies to keep in Drive. Twenty-eight is one week at six-hourly
+      # (four a day). Older ones are deleted after each successful upload, so the
+      # folder holds a rolling week and never grows without bound.
+      - key: BACKUP_KEEP
+        value: "28"
+      # STRONGLY recommended, and a secret. Set it and every backup is sealed with
+      # AES-256 before it leaves — so a copy sitting in Drive is unreadable to
+      # anyone without this password, which matters because the file holds members'
+      # health notes. To open a sealed backup later: `npm run backup:decrypt`.
+      # Leave it unset and backups are plain .db files that open with a
+      # double-click, which is friendlier and less private. Write this password
+      # down somewhere safe and separate: lose it and the encrypted backups cannot
+      # be opened, by anyone, ever.
+      - key: BACKUP_ENCRYPT_PASSWORD
+        sync: false
+
+      # ------------------------------------------------- the first boot only
+      # Read once, by the seed, when the disk is empty. Without them the desk
+      # accounts are created with the passwords written in src/db/seed.ts.
+      - key: SEED_OWNER_EMAIL
+        sync: false
+      - key: SEED_OWNER_PASSWORD
+        sync: false
+      - key: SEED_RECEPTION_EMAIL
+        sync: false
+      - key: SEED_RECEPTION_PASSWORD
+        sync: false

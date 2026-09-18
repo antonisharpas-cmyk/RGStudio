@@ -1,0 +1,346 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --brand: 58 53 50;
+    --cream: 246 243 240;
+    /* The font families Tailwind reads (see tailwind.config fontFamily). These
+       names are the ones the self-hosted @fontsource packages register — see
+       the imports in layout.tsx. */
+    --font-jost: "Jost";
+    --font-cormorant: "Cormorant Garamond";
+    --font-wordmark: "Marcellus";
+  }
+
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-cream text-mocha-700 font-sans font-light antialiased;
+    text-rendering: optimizeLegibility;
+    /* Cormorant Garamond defaults to old-style figures, which draw 1 as a
+       small roman I and drop 3, 4, 7 and 9 below the baseline. Dates, times
+       and balances have to read as numbers, so ask for lining figures. */
+    font-variant-numeric: lining-nums;
+    font-feature-settings: "lnum" 1;
+  }
+
+  ::selection {
+    @apply bg-mocha-600 text-cream;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply text-mocha-600;
+  }
+
+  /* Slim, brand-tinted scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #ede8e4;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #c6bdb6;
+    border-radius: 999px;
+    border: 3px solid #ede8e4;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #a69b93;
+  }
+}
+
+@layer components {
+  .container-x {
+    @apply mx-auto w-full max-w-[1240px] px-6 md:px-10;
+  }
+
+  .eyebrow {
+    @apply text-[11px] uppercase tracking-brand text-clay font-normal;
+  }
+
+  .h-display {
+    @apply font-display font-light leading-[1.05] tracking-[-0.01em];
+  }
+
+  .link-underline {
+    @apply relative after:absolute after:left-0 after:-bottom-0.5 after:h-px after:w-0 after:bg-current after:transition-all after:duration-500 after:ease-silk hover:after:w-full;
+  }
+
+  .card {
+    @apply rounded-3xl border border-mocha-200/60 bg-white/70 backdrop-blur-sm;
+  }
+
+  .input {
+    @apply w-full rounded-xl border border-mocha-200 bg-white/80 px-4 py-3 text-mocha-700 outline-none transition placeholder:text-clay/70 focus:border-mocha-500 focus:ring-2 focus:ring-mocha-500/15;
+  }
+
+  /* A <select> with .input, so the picked-not-typed fields match the typed
+     ones: the browser's own arrow is replaced with the site's chevron and the
+     padding leaves room for it. */
+  select.input {
+    @apply cursor-pointer appearance-none bg-[length:0.7rem] bg-[right_1rem_center] bg-no-repeat pr-10;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%238F857D' stroke-width='1.4' stroke-linecap='round'/%3E%3C/svg%3E");
+  }
+
+  .label {
+    @apply mb-2 block text-[11px] uppercase tracking-widest text-clay;
+  }
+
+  /* Grain + soft light for the editorial feel */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+@layer components {
+  /* ---- brand mark: one cacheable SVG, recoloured with currentColor ---- */
+  .monogram {
+    display: inline-block;
+    background-color: currentColor;
+    -webkit-mask-image: url("/brand/monogram.png");
+    mask-image: url("/brand/monogram.png");
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+  }
+
+  /* ---- social marks ----
+     Same trick as the monogram: the glyph is a mask over currentColor, so the
+     icon takes the colour of the text beside it (cream in the footer, brown on
+     the contact page) and the path data stays in a cacheable file instead of
+     the JavaScript bundle of every page with a footer. */
+  .social-icon {
+    display: inline-block;
+    flex: none;
+    background-color: currentColor;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+  }
+  .social-icon-instagram {
+    -webkit-mask-image: url("/brand/instagram.svg");
+    mask-image: url("/brand/instagram.svg");
+  }
+  .social-icon-facebook {
+    -webkit-mask-image: url("/brand/facebook.svg");
+    mask-image: url("/brand/facebook.svg");
+  }
+
+  /* ---- slow drift on hero imagery ---- */
+  .kenburns {
+    /* Runs once and settles, rather than for ever.
+       An endlessly animating transform keeps its layer recompositing on every
+       frame of the visit, and on Windows Chrome the type painted over it can
+       end up rasterised from stale tiles — letters arriving with pieces of
+       their stems missing while their neighbours are perfect. The drift is
+       only noticed on arrival anyway, so it now plays through and stops. */
+    animation: kenburns 24s cubic-bezier(0.33, 0, 0.2, 1) both;
+  }
+
+  /* ---- scroll cue ---- */
+  .scroll-cue span {
+    display: block;
+    width: 1px;
+    height: 56px;
+    background: linear-gradient(to bottom, currentColor, transparent);
+    transform-origin: top;
+    animation: cue 2.6s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  }
+
+  /* ---- scroll reveal (replaces an animation library; see Reveal.tsx) ---- */
+  .reveal {
+    opacity: 0;
+    transform: translateY(var(--reveal-y, 24px));
+    transition:
+      opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0ms),
+      transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  .reveal-item {
+    opacity: 0;
+    transform: translateY(var(--reveal-y, 22px));
+    transition:
+      opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal-group.is-visible > .reveal-item {
+    opacity: 1;
+    transform: none;
+  }
+  /* stagger without needing the index in JavaScript */
+  .reveal-group > .reveal-item:nth-child(1) { transition-delay: calc(var(--reveal-stagger, 90ms) * 0); }
+  .reveal-group > .reveal-item:nth-child(2) { transition-delay: calc(var(--reveal-stagger, 90ms) * 1); }
+  .reveal-group > .reveal-item:nth-child(3) { transition-delay: calc(var(--reveal-stagger, 90ms) * 2); }
+  .reveal-group > .reveal-item:nth-child(4) { transition-delay: calc(var(--reveal-stagger, 90ms) * 3); }
+  .reveal-group > .reveal-item:nth-child(5) { transition-delay: calc(var(--reveal-stagger, 90ms) * 4); }
+  .reveal-group > .reveal-item:nth-child(6) { transition-delay: calc(var(--reveal-stagger, 90ms) * 5); }
+  .reveal-group > .reveal-item:nth-child(7) { transition-delay: calc(var(--reveal-stagger, 90ms) * 6); }
+  .reveal-group > .reveal-item:nth-child(8) { transition-delay: calc(var(--reveal-stagger, 90ms) * 7); }
+  .reveal-group > .reveal-item:nth-child(n + 9) { transition-delay: calc(var(--reveal-stagger, 90ms) * 8); }
+
+  /* ---- the arch draws itself in as its Reveal wrapper turns visible ----
+     Separate from .parallax below, which owns the inner image's transform. */
+  .arch-in {
+    clip-path: inset(38% 6% 0 6% round 999px 999px 1.5rem 1.5rem);
+    opacity: 0;
+    transition:
+      clip-path 1.25s cubic-bezier(0.16, 1, 0.3, 1) 120ms,
+      opacity 0.8s ease 120ms;
+  }
+  .reveal.is-visible .arch-in {
+    clip-path: inset(0 0 0 0 round 999px 999px 1.5rem 1.5rem);
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .arch-in {
+      clip-path: none;
+      opacity: 1;
+      transition: none;
+    }
+  }
+
+  /* ---- scroll-linked drift (see Parallax.tsx) ----
+     The JS only writes two custom properties; the transform itself is the
+     compositor's job, so this never touches layout while scrolling. */
+  .parallax {
+    height: 100%;
+    width: 100%;
+    transform: translate3d(0, var(--px-shift, 0%), 0)
+      scale(var(--px-scale, 1));
+    will-change: transform;
+  }
+
+  /* ---- accordion: animates cleanly with no height measuring ---- */
+  .accordion-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .accordion-panel.is-open {
+    grid-template-rows: 1fr;
+  }
+  .accordion-panel > * {
+    overflow: hidden;
+  }
+
+  /* ---- full-screen mobile menu ---- */
+  .sheet {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+  }
+  .sheet.is-open {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .sheet-item {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .sheet.is-open .sheet-item {
+    opacity: 1;
+    transform: none;
+  }
+  .sheet.is-open .sheet-item:nth-child(1) { transition-delay: 80ms; }
+  .sheet.is-open .sheet-item:nth-child(2) { transition-delay: 140ms; }
+  .sheet.is-open .sheet-item:nth-child(3) { transition-delay: 200ms; }
+  .sheet.is-open .sheet-item:nth-child(4) { transition-delay: 260ms; }
+  .sheet.is-open .sheet-item:nth-child(5) { transition-delay: 320ms; }
+  .sheet.is-open .sheet-item:nth-child(6) { transition-delay: 380ms; }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+@keyframes kenburns {
+  from {
+    transform: scale(1.04) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.13) translate3d(-1.5%, -1.5%, 0);
+  }
+}
+
+@keyframes cue {
+  0% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+  35% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(1) translateY(56px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* show revealed content outright rather than leaving it faded out */
+  .kenburns,
+  .scroll-cue span {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .reveal,
+  .reveal-item,
+  .sheet-item {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

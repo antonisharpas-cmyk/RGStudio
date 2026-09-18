@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>RG Pilates Studio — headline type</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Italiana&family=Julius+Sans+One&family=Cormorant:wght@300&family=Prata&family=Bodoni+Moda:opsz,wght@6..96,400&family=Fraunces:opsz,wght@9..144,300&family=Marcellus&family=Tenor+Sans&family=Gilda+Display&family=Jost:wght@200;300&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --brown:#3A3532; --brown-deep:#161413; --cream:#F6F3F0; --clay:#8F857D;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--brown-deep); color:var(--cream);
+    font-family:'Jost',system-ui,sans-serif; font-weight:300;
+    -webkit-font-smoothing:antialiased;
+  }
+  header{
+    padding:48px 40px 28px; border-bottom:1px solid rgba(246,243,240,.14);
+    display:flex; flex-wrap:wrap; gap:24px; align-items:flex-end; justify-content:space-between;
+  }
+  h1{font-family:'Italiana',serif; font-weight:400; font-size:30px; margin:0; letter-spacing:.02em}
+  .hint{max-width:60ch; color:rgba(246,243,240,.6); font-size:13px; line-height:1.7; margin:10px 0 0}
+  .logo{max-width:230px; height:auto; opacity:.95}
+  .controls{display:flex; gap:18px; align-items:center; flex-wrap:wrap; font-size:11px;
+    letter-spacing:.18em; text-transform:uppercase; color:rgba(246,243,240,.55)}
+  .controls label{display:flex; gap:8px; align-items:center; cursor:pointer}
+  main{padding:8px 40px 80px}
+  .row{padding:44px 0; border-bottom:1px solid rgba(246,243,240,.1)}
+  .meta{display:flex; gap:14px; align-items:baseline; flex-wrap:wrap; margin-bottom:22px}
+  .name{font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:var(--clay)}
+  .note{font-size:12px; color:rgba(246,243,240,.42)}
+  .spec{
+    font-size:10px; letter-spacing:.16em; text-transform:uppercase;
+    color:rgba(246,243,240,.35); border:1px solid rgba(246,243,240,.18);
+    border-radius:999px; padding:3px 10px;
+  }
+  .kicker{display:block; text-transform:uppercase; letter-spacing:.32em; line-height:1;
+    font-size:clamp(18px,2.4vw,40px); color:rgba(246,243,240,.85)}
+  .word{display:block; text-transform:uppercase; letter-spacing:.02em; line-height:.88;
+    font-size:clamp(56px,11vw,168px); margin-top:8px}
+  .city{display:block; text-transform:uppercase; letter-spacing:.62em; margin-top:16px;
+    font-size:clamp(10px,1vw,14px); color:rgba(246,243,240,.7)}
+  .stack{text-align:center}
+  body.light{background:var(--cream); color:var(--brown)}
+  body.light .kicker{color:rgba(58,53,50,.85)}
+  body.light .city{color:rgba(58,53,50,.7)}
+  body.light .hint,body.light .note{color:rgba(58,53,50,.6)}
+  body.light .row,body.light header{border-color:rgba(58,53,50,.14)}
+  body.light .spec{border-color:rgba(58,53,50,.2); color:rgba(58,53,50,.5)}
+  body.lower .kicker,body.lower .word,body.lower .city{text-transform:none}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <img class="logo" src="../public/brand/wordmark-cream.png" alt="RG Pilates Studio" id="logo" />
+    <h1>Headline type — candidates</h1>
+    <p class="hint">
+      Each block is the cover headline at real size. Compare the letterforms against
+      the wordmark above: look at the <strong>A</strong>, the <strong>E</strong> and the
+      flare where a stroke meets its terminal. Pick one, then tell me the name — or set
+      it yourself in <code>src/app/layout.tsx</code> (the <code>&lt;link&gt;</code> and
+      <code>--font-wordmark</code>).
+    </p>
+  </div>
+  <div class="controls">
+    <label><input type="checkbox" id="bg" /> Light ground</label>
+    <label><input type="checkbox" id="case" /> Mixed case</label>
+  </div>
+</header>
+
+<main id="list"></main>
+
+<script>
+  const CANDIDATES = [
+    ['Italiana',        "currently live — thin, wide, flared. The closest to the logo's delicacy."],
+    ['Julius Sans One', 'Optima-like flare, geometric caps. Very close to the wordmark.'],
+    ['Cormorant',       'high-contrast serif, light weight — elegant, more classical.'],
+    ['Prata',           'generous curves, high contrast. The most "wave" of the serifs.'],
+    ['Bodoni Moda',     'hairline serifs, sharp contrast — fashion-editorial.'],
+    ['Fraunces',        'soft, organic, slightly wonky. The most literally wavy.'],
+    ['Marcellus',       'subtle flared serifs, roman proportions.'],
+    ['Tenor Sans',      'quiet humanist caps, wide and calm.'],
+    ['Gilda Display',   'delicate serif with pronounced flare.'],
+    ['Jost',            'the geometric sans the site already uses, for reference.'],
+  ];
+
+  document.getElementById('list').innerHTML = CANDIDATES.map(([font, note]) => `
+    <section class="row">
+      <div class="meta">
+        <span class="name">${font}</span>
+        <span class="note">${note}</span>
+        <span class="spec">font-family: '${font}'</span>
+      </div>
+      <div class="stack" style="font-family:'${font}',serif">
+        <span class="kicker">Reformer</span>
+        <span class="word">Pilates</span>
+        <span class="city">Larnaca</span>
+      </div>
+    </section>`).join('');
+
+  const swapLogo = () =>
+    document.getElementById('logo').src = document.body.classList.contains('light')
+      ? '../public/brand/wordmark-brown.png'
+      : '../public/brand/wordmark-cream.png';
+
+  document.getElementById('bg').addEventListener('change', e => {
+    document.body.classList.toggle('light', e.target.checked); swapLogo();
+  });
+  document.getElementById('case').addEventListener('change', e => {
+    document.body.classList.toggle('lower', e.target.checked);
+  });
+</script>
+</body>
+</html>

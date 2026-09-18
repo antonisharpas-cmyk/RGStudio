@@ -1,0 +1,28 @@
+{
+  /**
+   * The config `next build` uses, named in next.config.ts.
+   *
+   * Why it exists. The ordinary tsconfig.json type-checks everything, `scripts/`
+   * included, which is what you want from `npm run typecheck`: the eleven test
+   * suites and the maintenance scripts are real code and a mistake in one should
+   * be caught.
+   *
+   * But `next build` runs that same check, and those scripts import things the
+   * website does not depend on and a hosting provider will not have installed:
+   * playwright-core for the card and manual renderers, and anything else a
+   * future script reaches for. A missing type declaration in a script nobody
+   * runs in production then fails the deploy, with an error pointing at a file
+   * that has nothing to do with the site. That happened once, on the first
+   * Render deploy, and cost an afternoon.
+   *
+   * So the build checks the application and leaves the toolbox to `typecheck`.
+   * Nothing is unchecked: both run in the same repository, one of them on every
+   * commit if you wire it up.
+   */
+  "extends": "./tsconfig.json",
+  /* Repeated from the base config only to silence a build warning: Next cannot
+     add its TypeScript plugin automatically to a config that extends another
+     one, and says so on every build. Naming it here is the whole fix. */
+  "compilerOptions": { "plugins": [{ "name": "next" }] },
+  "exclude": ["node_modules", "scripts"]
+}
