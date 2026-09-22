@@ -161,6 +161,9 @@ export function TeamPanel({ onNotice }: { onNotice: (s: string) => void }) {
               onChange={(e) => setDraft({ ...draft, [key]: e.target.value })}
               className="input resize-y"
             />
+            {key !== "bioEn" && (
+              <span className="mt-1 block text-[11px] text-clay">{d.teamBioFallback}</span>
+            )}
           </label>
         ))}
       </div>

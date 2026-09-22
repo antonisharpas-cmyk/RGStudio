@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { Fragment, useState, type ReactNode } from "react";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { useI18n } from "@/i18n/LanguageProvider";
@@ -57,10 +57,18 @@ export function PricingGrid({
   packages,
   signedIn,
   showIncludes = true,
+  beforeBuilder,
 }: {
   packages: PackageCard[];
   signedIn: boolean;
   showIncludes?: boolean;
+  /**
+   * A section slotted in after the three month cards and before the long
+   * term builder. The pricing page puts the monthly plans here, so the page
+   * runs: one class, a month, three months, a term paid monthly, a custom
+   * term paid up front, and then the appointments.
+   */
+  beforeBuilder?: ReactNode;
 }) {
   const { t, locale, fmtMoney } = useI18n();
   const router = useRouter();
@@ -307,6 +315,9 @@ export function PricingGrid({
             })}
           </RevealGroup>
         </section>,
+        section.key === BUILDER_AFTER ? (
+          <Fragment key="before-builder">{beforeBuilder}</Fragment>
+        ) : null,
         section.key === BUILDER_AFTER ? builderSection : null,
       ])}
 

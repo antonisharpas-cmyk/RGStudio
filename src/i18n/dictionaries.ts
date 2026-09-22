@@ -327,7 +327,7 @@ export const en = {
   pricingPage: {
     eyebrow: "Pricing",
     title: "Session packs.",
-    body: "No contracts to lock you in. Buy sessions, use them when you can actually come. Bigger packs cost less per class.",
+    body: "",
     /* Headings for the three commitments. The note under each is the part that
        does the work: "12 classes" appears in both the monthly and the 3-month
        group, and the only thing separating them is how long you have. */
@@ -806,9 +806,18 @@ export const en = {
     packOff: "Off sale",
     packSwitchOn: "Put on sale",
     packSwitchOff: "Take off sale",
+    packDelete: "Delete",
+    packDeleteConfirm: "Press again to delete",
+    packDeleted: "Pack deleted.",
+    packSold: "This pack has been sold, so it cannot be deleted. Members' history points at it. Take it off sale instead.",
     packSaved: "Pack saved. The pricing page shows the change.",
     packCreated: "Pack created.",
     packBad: "Check the name, the sessions, the days and the price.",
+    packNeedName: "Give the pack a name of at least 2 characters, in English or Greek.",
+    packNeedSessions: "Sessions must be a whole number from 1 to 500.",
+    packNeedDays: "Days of validity must be a whole number from 1 to 1095.",
+    packNeedPrice: "The price must be at least 1 euro, for example 90 or 89.50.",
+    packForbidden: "Only the owner can change packs. Unlock the console as the owner and try again.",
     /* ---- monthly plans, on the member's card ---- */
     planTitle: "Monthly plan",
     planHelp:
@@ -842,6 +851,7 @@ export const en = {
     teamBioEn: "Bio (English)",
     teamBioEl: "Bio (Greek)",
     teamBioRu: "Bio (Russian)",
+    teamBioFallback: "Left empty, readers of this language see the English bio.",
     teamPhoto: "Photo address",
     teamPhotoHelp:
       "A link to a portrait, for example /team/maria.jpg after the file is added to the site, or a full https address. Leave empty for the studio mark.",
@@ -1799,7 +1809,7 @@ export const el: typeof en = {
   pricingPage: {
     eyebrow: "Τιμές",
     title: "Πακέτα συνεδριών.",
-    body: "Χωρίς δεσμεύσεις. Αγόρασε συνεδρίες και χρησιμοποίησέ τις όταν μπορείς να έρθεις. Τα μεγαλύτερα πακέτα κοστίζουν λιγότερο ανά μάθημα.",
+    body: "",
     groups: {
       single: {
         title: "Ένα τη φορά",
@@ -2237,9 +2247,18 @@ export const el: typeof en = {
     packOff: "Εκτός πώλησης",
     packSwitchOn: "Βάλε σε πώληση",
     packSwitchOff: "Βγάλε από πώληση",
+    packDelete: "Διαγραφή",
+    packDeleteConfirm: "Πάτησε ξανά για διαγραφή",
+    packDeleted: "Το πακέτο διαγράφηκε.",
+    packSold: "Αυτό το πακέτο έχει πωληθεί, οπότε δεν μπορεί να διαγραφεί. Το ιστορικό των μελών δείχνει σε αυτό. Βγάλε το από πώληση.",
     packSaved: "Το πακέτο αποθηκεύτηκε. Η σελίδα τιμών δείχνει την αλλαγή.",
     packCreated: "Το πακέτο δημιουργήθηκε.",
     packBad: "Έλεγξε το όνομα, τις συνεδρίες, τις ημέρες και την τιμή.",
+    packNeedName: "Δώσε στο πακέτο όνομα τουλάχιστον 2 χαρακτήρων, στα αγγλικά ή στα ελληνικά.",
+    packNeedSessions: "Οι συνεδρίες πρέπει να είναι ακέραιος αριθμός από 1 έως 500.",
+    packNeedDays: "Οι ημέρες ισχύος πρέπει να είναι ακέραιος αριθμός από 1 έως 1095.",
+    packNeedPrice: "Η τιμή πρέπει να είναι τουλάχιστον 1 ευρώ, για παράδειγμα 90 ή 89,50.",
+    packForbidden: "Μόνο ο ιδιοκτήτης μπορεί να αλλάξει πακέτα. Ξεκλείδωσε την κονσόλα ως ιδιοκτήτης και δοκίμασε ξανά.",
     /* ---- μηνιαία πλάνα ---- */
     planTitle: "Μηνιαίο πλάνο",
     planHelp:
@@ -2273,6 +2292,7 @@ export const el: typeof en = {
     teamBioEn: "Βιογραφικό (Αγγλικά)",
     teamBioEl: "Βιογραφικό (Ελληνικά)",
     teamBioRu: "Βιογραφικό (Ρωσικά)",
+    teamBioFallback: "Αν μείνει κενό, οι αναγνώστες αυτής της γλώσσας βλέπουν το αγγλικό βιογραφικό.",
     teamPhoto: "Διεύθυνση φωτογραφίας",
     teamPhotoHelp:
       "Σύνδεσμος προς πορτρέτο, για παράδειγμα /team/maria.jpg αφού προστεθεί το αρχείο στη σελίδα, ή πλήρης διεύθυνση https. Άφησέ το κενό για το σήμα του στούντιο.",

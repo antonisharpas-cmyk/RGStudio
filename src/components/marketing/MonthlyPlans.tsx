@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
-import { SectionHead } from "@/components/ui/Section";
 import { useI18n } from "@/i18n/LanguageProvider";
 import { cn } from "@/lib/utils";
 
@@ -61,11 +60,15 @@ export function MonthlyPlans({
     );
 
   return (
-    <div className="mt-20">
-      <SectionHead eyebrow={d.eyebrow} title={d.title} body={d.body} />
-      <Reveal className="mt-10">
+    <section>
+      <div className="mb-6 flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-mocha-200/70 pb-4">
+        <h3 className="h-display text-[1.6rem] text-mocha-600">{d.eyebrow}</h3>
+        <p className="text-[13px] text-clay">{d.title}</p>
+      </div>
+      <Reveal>
         <div className="grid gap-8 rounded-4xl border border-mocha-200/70 bg-white/70 p-8 backdrop-blur-sm md:grid-cols-[1fr_1fr] md:p-10">
           <div className="space-y-6">
+            <p className="text-[13px] leading-relaxed text-mocha-500">{d.body}</p>
             <div className="space-y-2">
               <p className="text-[9px] uppercase tracking-widest text-clay/70">{d.months}</p>
               <div className="flex flex-wrap gap-2">
@@ -104,7 +107,7 @@ export function MonthlyPlans({
                 <p className="mt-2 text-[12px] leading-relaxed text-clay">
                   {d.rule.replace("{days}", String(graceDays))}
                 </p>
-                <Button className="mt-auto pt-0 md:mt-8" onClick={start}>
+                <Button className="mt-8 w-full" onClick={start}>
                   {signedIn ? d.cta : d.signIn}
                 </Button>
               </>
@@ -114,6 +117,6 @@ export function MonthlyPlans({
           </div>
         </div>
       </Reveal>
-    </div>
+    </section>
   );
 }

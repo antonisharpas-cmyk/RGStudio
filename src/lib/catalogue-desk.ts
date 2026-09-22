@@ -1,6 +1,6 @@
-import { asc, eq } from "drizzle-orm";
+import { asc, eq, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { creditPackages, type CreditPackage } from "@/db/schema";
+import { creditPackages, purchases, type CreditPackage } from "@/db/schema";
 import { groupOf, type PackGroup } from "./packs";
 
 /**
@@ -125,6 +125,31 @@ export function updatePack(id: string, patch: PackPatch): PackResult {
     .returning()
     .get();
   return { ok: true, pack: withGroup(row) };
+}
+
+export type DeleteResult =
+  | { ok: true }
+  | { ok: false; code: "NOT_FOUND" | "SOLD" };
+
+/**
+ * Delete a pack, but only one nobody has ever bought.
+ *
+ * A pack with a purchase against it stays, off sale, because members' history
+ * and invoices point at it and must keep saying what was bought. A pack made
+ * by mistake and never sold can simply go. Offers scoped to it go with it and
+ * promo codes scoped to it fall back to the whole list (the schema says so).
+ */
+export function deletePack(id: string): DeleteResult {
+  const existing = db.select({ id: creditPackages.id }).from(creditPackages).where(eq(creditPackages.id, id)).get();
+  if (!existing) return { ok: false, code: "NOT_FOUND" };
+  const sold = db
+    .select({ n: sql<number>`count(*)` })
+    .from(purchases)
+    .where(eq(purchases.packageId, id))
+    .get();
+  if (sold && sold.n > 0) return { ok: false, code: "SOLD" };
+  db.delete(creditPackages).where(eq(creditPackages.id, id)).run();
+  return { ok: true };
 }
 
 export function createPack(input: PackPatch): PackResult {

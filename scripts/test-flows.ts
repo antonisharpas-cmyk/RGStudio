@@ -591,8 +591,8 @@ async function main() {
       onSale,
     );
     check(
-      "packs on sale match the offered list",
-      onSale.every((slug) => OFFERED_PACK_SLUGS.has(slug)),
+      "packs on sale match the offered list (desk made packs aside)",
+      onSale.every((slug) => OFFERED_PACK_SLUGS.has(slug) || slug.startsWith("desk-")),
       onSale,
     );
 

@@ -1,6 +1,5 @@
 "use client";
 
-import { Faq } from "@/components/marketing/Faq";
 import { MonthlyPlans, type PlanOffer } from "@/components/marketing/MonthlyPlans";
 import { PricingGrid, type PackageCard } from "@/components/marketing/PricingGrid";
 import { Section, SectionHead } from "@/components/ui/Section";
@@ -29,16 +28,14 @@ export function PricingPageBody({
             body={t.pricingPage.body}
           />
           <div className="mt-14">
-            <PricingGrid packages={packages} signedIn={signedIn} />
+            <PricingGrid
+              packages={packages}
+              signedIn={signedIn}
+              beforeBuilder={
+                <MonthlyPlans plans={plans} signedIn={signedIn} graceDays={graceDays} />
+              }
+            />
           </div>
-          <MonthlyPlans plans={plans} signedIn={signedIn} graceDays={graceDays} />
-        </div>
-      </Section>
-
-      <Section tone="sand">
-        <div className="container-x grid gap-16 lg:grid-cols-[0.8fr_1.2fr] lg:gap-24">
-          <SectionHead eyebrow={t.home.faq.eyebrow} title={t.home.faq.title} />
-          <Faq />
         </div>
       </Section>
     </>

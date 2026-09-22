@@ -112,6 +112,10 @@ export function PricingPanel({
   const [deskPacks, setDeskPacks] = useState<DeskPack[]>([]);
   const [editingPack, setEditingPack] = useState<string | "new" | null>(null);
   const [packDraft, setPackDraft] = useState<PackDraft>(EMPTY_PACK);
+  /* Said inside the form, next to the button that was pressed. The page's
+     notice sits at the top and a long pack list scrolls it out of sight, so a
+     refused save looked like a button that did nothing. */
+  const [packError, setPackError] = useState<string | null>(null);
 
   /* Promo codes. */
   const [codes, setCodes] = useState<Promo[]>([]);
@@ -156,27 +160,49 @@ export function PricingPanel({
   }
 
   async function savePack() {
+    setPackError(null);
+    /* Either name will do; the other falls back to it. */
+    const nameEn = (packDraft.nameEn.trim() || packDraft.nameEl.trim()).slice(0, 80);
+    const nameEl = (packDraft.nameEl.trim() || packDraft.nameEn.trim()).slice(0, 80);
+    const credits = Number(packDraft.credits);
+    const validityDays = Number(packDraft.validityDays);
+    const priceCents = Math.round(Number(packDraft.priceEuros.trim().replace(",", ".")) * 100);
+    if (nameEn.length < 2) return setPackError(d.packNeedName);
+    if (!Number.isInteger(credits) || credits < 1 || credits > 500) return setPackError(d.packNeedSessions);
+    if (!Number.isInteger(validityDays) || validityDays < 1 || validityDays > 1095) return setPackError(d.packNeedDays);
+    if (!Number.isFinite(priceCents) || priceCents < 100) return setPackError(d.packNeedPrice);
+
     setBusy("pack");
     try {
-      const payload = {
-        nameEn: packDraft.nameEn,
-        nameEl: packDraft.nameEl || packDraft.nameEn,
-        credits: Number(packDraft.credits),
-        priceCents: Math.round(Number(packDraft.priceEuros.replace(",", ".")) * 100),
-        validityDays: Number(packDraft.validityDays),
-        group: packDraft.group,
-      };
+      const payload = { nameEn, nameEl, credits, priceCents, validityDays, group: packDraft.group };
       const res = await fetch("/api/admin/packs", {
         method: editingPack === "new" ? "POST" : "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editingPack === "new" ? payload : { id: editingPack, ...payload }),
       });
-      const data = (await res.json()) as { error?: string; packs?: DeskPack[] };
-      if (data.error) {
-        onNotice(d.packBad);
+      const data = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        packs?: DeskPack[];
+        pack?: DeskPack;
+      };
+      if (!res.ok || data.error) {
+        setPackError(
+          data.error === "FORBIDDEN" || res.status === 401 || res.status === 403 || res.status === 423
+            ? d.packForbidden
+            : d.packBad,
+        );
         return;
       }
-      if (data.packs) setDeskPacks(data.packs);
+      if (data.packs) {
+        /* The one just made goes first, so it is visible beside the form it
+           came from rather than at the foot of a long list. */
+        const made = data.pack;
+        setDeskPacks(
+          editingPack === "new" && made
+            ? [made, ...data.packs.filter((p) => p.id !== made.id)]
+            : data.packs,
+        );
+      }
       setEditingPack(null);
       onNotice(editingPack === "new" ? d.packCreated : d.packSaved);
       router.refresh();
@@ -255,6 +281,36 @@ export function PricingPanel({
       });
       const data = (await res.json()) as { codes?: Promo[] };
       if (data.codes) setCodes(data.codes);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  /* Two presses: the first arms the button, the second deletes. No browser
+     dialog, which would look foreign to the console and cannot be translated. */
+  const [armedDelete, setArmedDelete] = useState<string | null>(null);
+
+  async function deletePack(p: DeskPack) {
+    if (armedDelete !== p.id) {
+      setArmedDelete(p.id);
+      return;
+    }
+    setArmedDelete(null);
+    setBusy(`pack-${p.id}`);
+    try {
+      const res = await fetch("/api/admin/packs", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: p.id }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { error?: string; packs?: DeskPack[] };
+      if (!res.ok || data.error) {
+        onNotice(data.error === "SOLD" ? d.packSold : d.packBad);
+        return;
+      }
+      if (data.packs) setDeskPacks(data.packs);
+      onNotice(d.packDeleted);
+      router.refresh();
     } finally {
       setBusy(null);
     }
@@ -347,15 +403,23 @@ export function PricingPanel({
           />
         </label>
       </div>
+      {packError && (
+        <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {packError}
+        </p>
+      )}
       <div className="mt-4 flex flex-wrap gap-3">
-        <Button
-          size="sm"
-          disabled={busy === "pack" || packDraft.nameEn.trim().length < 2}
-          onClick={() => void savePack()}
-        >
+        <Button size="sm" disabled={busy === "pack"} onClick={() => void savePack()}>
           {busy === "pack" ? t.common.loading : t.common.save}
         </Button>
-        <Button size="sm" variant="ghost" onClick={() => setEditingPack(null)}>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => {
+            setEditingPack(null);
+            setPackError(null);
+          }}
+        >
           {t.common.cancel}
         </Button>
       </div>
@@ -479,6 +543,16 @@ export function PricingPanel({
                       onClick={() => void togglePack(p)}
                     >
                       {p.active ? d.packSwitchOff : d.packSwitchOn}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      disabled={busy === `pack-${p.id}`}
+                      onClick={() => void deletePack(p)}
+                      onBlur={() => armedDelete === p.id && setArmedDelete(null)}
+                      className={armedDelete === p.id ? "text-red-700" : "text-clay"}
+                    >
+                      {armedDelete === p.id ? d.packDeleteConfirm : d.packDelete}
                     </Button>
                   </span>
                 </div>

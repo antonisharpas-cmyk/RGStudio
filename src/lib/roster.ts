@@ -18,6 +18,7 @@ export type RosterMember = {
   name: string;
   bioEn: string;
   bioEl: string;
+  bioRu: string;
   photoUrl: string;
   sortOrder: number;
 };
@@ -33,6 +34,8 @@ export const INSTRUCTOR_ROSTER: readonly RosterMember[] = [
       "Andrea is the person most members meet first. Friendly, patient and precise, she sets your springs and your pace so your first class feels like it was built for you, and she keeps that attention on your fiftieth.",
     bioEl:
       "Η Andrea είναι το πρόσωπο που συναντούν πρώτα τα περισσότερα μέλη. Φιλική, υπομονετική και ακριβής, ρυθμίζει τα ελατήρια και τον ρυθμό σου ώστε το πρώτο μάθημα να νιώθει φτιαγμένο για εσένα, και κρατά την ίδια προσοχή και στο πεντηκοστό.",
+    bioRu:
+      "Андреа первая, кого встречают большинство участников. Дружелюбная, терпеливая и точная, она подбирает пружины и темп так, чтобы первое занятие казалось созданным для вас, и сохраняет то же внимание на пятидесятом.",
     photoUrl: "",
     sortOrder: 1,
   },
@@ -42,6 +45,8 @@ export const INSTRUCTOR_ROSTER: readonly RosterMember[] = [
       "Maria takes the time to make sure every position is right for the body in front of her. Calm and quietly demanding, she meets you at your level and moves you on from there, one clear cue at a time.",
     bioEl:
       "Η Maria αφιερώνει χρόνο ώστε κάθε θέση να είναι σωστή για το σώμα που έχει μπροστά της. Ήρεμη και διακριτικά απαιτητική, σε συναντά στο επίπεδό σου και σε εξελίσσει από εκεί, με μία σαφή οδηγία τη φορά.",
+    bioRu:
+      "Мария не торопится и следит, чтобы каждое положение подходило именно тому телу, что перед ней. Спокойная и негромко требовательная, она встречает вас на вашем уровне и ведёт дальше, по одной ясной подсказке за раз.",
     photoUrl: "",
     sortOrder: 2,
   },
@@ -80,12 +85,12 @@ export function reconcileRoster(): Map<string, string> {
       "select id, edited_at from instructors where name = ? limit 1",
     );
     const insert = sqlite.prepare(
-      `insert into instructors (id, name, bio_en, bio_el, photo_url, active, sort_order)
-       values (?, ?, ?, ?, ?, 1, ?)`,
+      `insert into instructors (id, name, bio_en, bio_el, bio_ru, photo_url, active, sort_order)
+       values (?, ?, ?, ?, ?, ?, 1, ?)`,
     );
     const refresh = sqlite.prepare(
       `update instructors
-          set photo_url = ?, sort_order = ?, bio_en = ?, bio_el = ?
+          set photo_url = ?, sort_order = ?, bio_en = ?, bio_el = ?, bio_ru = ?
         where id = ? and edited_at is null`,
     );
 
@@ -94,13 +99,14 @@ export function reconcileRoster(): Map<string, string> {
         | { id: string; edited_at: number | null }
         | undefined;
       if (row) {
-        refresh.run(m.photoUrl || null, m.sortOrder, m.bioEn, m.bioEl, row.id);
+        refresh.run(m.photoUrl || null, m.sortOrder, m.bioEn, m.bioEl, m.bioRu, row.id);
       } else {
         insert.run(
           crypto.randomUUID(),
           m.name,
           m.bioEn,
           m.bioEl,
+          m.bioRu,
           m.photoUrl || null,
           m.sortOrder,
         );

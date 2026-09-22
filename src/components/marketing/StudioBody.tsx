@@ -14,6 +14,7 @@ export type TeamMember = {
   name: string;
   bioEn: string;
   bioEl: string;
+  bioRu: string;
   photoUrl: string | null;
 };
 
@@ -147,7 +148,7 @@ export function StudioBody({ team = [] }: { team?: TeamMember[] }) {
                     <div className="flex flex-1 flex-col p-7">
                       <h3 className="h-display text-2xl">{m.name}</h3>
                       <p className="mt-3 text-sm leading-relaxed text-mocha-500">
-                        {el ? m.bioEl : m.bioEn}
+                        {locale === "ru" && m.bioRu ? m.bioRu : el && m.bioEl ? m.bioEl : m.bioEn}
                       </p>
                       {/* Sits in the bottom corner, pushed down by mt-auto so
                           it lands on the same line across the row however long
