@@ -213,6 +213,17 @@ const TABLES: { name: string; ddl: string }[] = [
           )`,
   },
   {
+    name: "password_resets",
+    ddl: `create table password_resets (
+            id text primary key not null,
+            user_id text not null references users(id) on delete cascade,
+            token_hash text not null,
+            expires_at integer not null,
+            used_at integer,
+            created_at integer not null
+          )`,
+  },
+  {
     name: "push_subscriptions",
     ddl: `create table push_subscriptions (
             id text primary key not null,
@@ -303,6 +314,10 @@ const INDEXES: { name: string; ddl: string }[] = [
   {
     name: "pricing_rules_active_idx",
     ddl: "create index pricing_rules_active_idx on pricing_rules (active)",
+  },
+  {
+    name: "password_resets_user_idx",
+    ddl: "create unique index password_resets_user_idx on password_resets (user_id)",
   },
   {
     name: "push_endpoint_idx",

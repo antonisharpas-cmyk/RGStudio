@@ -95,6 +95,20 @@ it is not the way to add sessions to the current month. For that, the
 desk sells the pack with the "adjustment" method or grants sessions, both
 of which count from today.
 
+## Forgotten passwords
+
+"Forgot your password?" sits under the sign in form. The member types their
+email and gets a link (never a code) that opens `/reset?token=...`, where they
+type the new password twice, each box with an eye to uncover it. The link
+works once and dies after 60 minutes; asking again replaces it. Only a keyed
+hash of the token is stored (`password_resets`), the request route is rate
+limited to five an hour per address, and the answer is the same whether or
+not the email has an account, so the form cannot be used to find out who is a
+member. The email goes out regardless of the member's notification settings,
+because it is the key to the door. `npm run test:reset` covers the library
+and the HTTP suite exercises the pages. Needs `NEXT_PUBLIC_SITE_URL` set to
+the real address, since the link in the email is built from it.
+
 ## Desk logins
 
 Development defaults, created by `npm run setup` (or `npm run db:seed`):

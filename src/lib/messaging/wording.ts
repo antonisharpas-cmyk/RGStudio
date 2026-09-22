@@ -756,6 +756,39 @@ export function verifySentWords(a: { minutes: number }): Bilingual {
   };
 }
 
+/**
+ * The password reset email. Carries the link and nothing else that opens a
+ * door: no name, no account details, no code to type.
+ */
+export function resetWords(a: { url: string; minutes: number }): Bilingual {
+  return {
+    en: {
+      subject: "Reset your RG Pilates Studio password",
+      body:
+        `Somebody asked to reset the password for the RG Pilates Studio account ` +
+        `with this email address. We hope it was you.\n\n` +
+        `Open this link to choose a new password:\n${a.url}\n\n` +
+        `The link works once and expires in ${a.minutes} minutes. If it has ` +
+        `expired, ask for a new one from the sign in page.\n\n` +
+        `If this was not you, ignore this email. Your password has not changed ` +
+        `and nothing else will happen.`,
+      url: "/login",
+    },
+    el: {
+      subject: "Επαναφορά κωδικού για το RG Pilates Studio",
+      body:
+        `Κάποιος ζήτησε επαναφορά κωδικού για τον λογαριασμό RG Pilates Studio ` +
+        `με αυτή τη διεύθυνση email. Ελπίζουμε να είστε εσείς.\n\n` +
+        `Ανοίξτε αυτόν τον σύνδεσμο για να ορίσετε νέο κωδικό:\n${a.url}\n\n` +
+        `Ο σύνδεσμος λειτουργεί μία φορά και λήγει σε ${a.minutes} λεπτά. Αν έχει ` +
+        `λήξει, ζητήστε νέο από τη σελίδα σύνδεσης.\n\n` +
+        `Αν δεν ήσασταν εσείς, αγνοήστε αυτό το email. Ο κωδικός σας δεν έχει ` +
+        `αλλάξει και δεν θα συμβεί τίποτα άλλο.`,
+      url: "/login",
+    },
+  };
+}
+
 export function verifyWords(a: { code: string; minutes: number }): Bilingual {
   return {
     en: {

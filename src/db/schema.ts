@@ -229,6 +229,36 @@ export const emailVerifications = sqliteTable(
 );
 
 /**
+ * A forgotten password, and the one-time link that fixes it.
+ *
+ * A link here rather than a code, unlike email verification. Somebody who has
+ * forgotten their password is not sitting in a half-finished registration
+ * with a box waiting for six digits; they are locked out, most often on their
+ * phone, reading their email in the same place they will type the new
+ * password. One tap, two boxes, done.
+ *
+ * The token itself is never stored, only a keyed hash of it, so a copy of the
+ * database is not a set of working links. One live link per account: asking
+ * again replaces the previous one, so the newest email is always the one that
+ * works. Used once and then dead, and dead after an hour whether used or not.
+ */
+export const passwordResets = sqliteTable(
+  "password_resets",
+  {
+    id: id(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    /** HMAC of the token, keyed with AUTH_SECRET. Never the token. */
+    tokenHash: text("token_hash").notNull(),
+    expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
+    usedAt: integer("used_at", { mode: "timestamp" }),
+    createdAt: now().notNull(),
+  },
+  (t) => [uniqueIndex("password_resets_user_idx").on(t.userId)],
+);
+
+/**
  * Profile photographs, kept out of the users row and out of the filesystem.
  *
  * A separate table because a blob on `users` would be read on every session

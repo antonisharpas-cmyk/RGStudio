@@ -47,6 +47,12 @@ const OPEN_PATHS = new Set([
   "/api/auth/logout",
   "/api/auth/login",
   "/api/auth/register",
+  /* A forgotten password belongs to somebody who cannot sign in at all, and
+     an unverified account with a stale cookie must still be able to reset. */
+  "/forgot",
+  "/reset",
+  "/api/auth/forgot",
+  "/api/auth/reset",
   /* The service worker. Registered from the account page, but a browser may ask
      for it at any moment, and answering a script request with a redirect to an
      HTML page is how you get an unregistered worker and a console full of

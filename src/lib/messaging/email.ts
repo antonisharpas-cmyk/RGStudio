@@ -45,9 +45,17 @@ function html(msg: Outgoing) {
       if (p.trim() === LANGUAGE_RULE) {
         return '<hr style="border:none;border-top:1px solid #e7dcd3;margin:26px 0">';
       }
+      /* A bare https address becomes a link, so the password reset email is
+         one tap on a phone. Escaped first, so the address can carry nothing
+         but itself. */
       return `<p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:#4a3a39">${escape(
         p,
-      ).replace(/\n/g, "<br>")}</p>`;
+      )
+        .replace(
+          /(https?:\/\/[^\s<]+)/g,
+          '<a href="$1" style="color:#3b2d2c;text-decoration:underline">$1</a>',
+        )
+        .replace(/\n/g, "<br>")}</p>`;
     })
     .join("");
 

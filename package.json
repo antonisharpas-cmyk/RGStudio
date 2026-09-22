@@ -40,6 +40,7 @@
     "test:personal": "tsx scripts/test-personal.ts",
     "test:account": "tsx scripts/test-account.ts",
     "test:chain": "tsx scripts/test-chain.ts",
+    "test:reset": "tsx scripts/test-reset.ts",
     "manual": "node scripts/manual.mjs",
     "social": "tsx scripts/social.ts",
     "invoice:preview": "tsx scripts/invoice-preview.ts",

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { LegalModal } from "@/components/auth/LegalModal";
+import { PasswordField } from "@/components/auth/PasswordField";
 import { Button } from "@/components/ui/Button";
 import { Monogram } from "@/components/ui/Monogram";
 import { useI18n } from "@/i18n/LanguageProvider";
@@ -243,25 +244,14 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
               </div>
             )}
 
-            <div>
-              <label className="label" htmlFor="password">
-                {t.common.password}
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                minLength={isLogin ? undefined : 8}
-                autoComplete={isLogin ? "current-password" : "new-password"}
-                required
-                className="input"
-              />
-              {!isLogin && (
-                <p className="mt-2 text-[11px] text-clay">
-                  {t.auth.passwordHint}
-                </p>
-              )}
-            </div>
+            <PasswordField
+              id="password"
+              name="password"
+              label={t.common.password}
+              minLength={isLogin ? undefined : 8}
+              autoComplete={isLogin ? "current-password" : "new-password"}
+              hint={isLogin ? undefined : t.auth.passwordHint}
+            />
 
             {!isLogin && (
               <div className="space-y-4 border-t border-mocha-200/70 pt-5">
@@ -374,6 +364,13 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
               {isLogin ? t.auth.signUp : t.auth.signIn}
             </Link>
           </p>
+          {isLogin && (
+            <p className="mt-3 text-center text-[12px] text-mocha-500">
+              <Link href="/forgot" className="link-underline text-mocha-600">
+                {t.auth.forgot}
+              </Link>
+            </p>
+          )}
         </form>
       </div>
 

@@ -33,6 +33,7 @@ import {
   contactAckWords,
   contactStudioWords,
   forEmail,
+  resetWords,
   instructorChangedWords,
   leadWords,
   personalBookedWords,
@@ -1009,6 +1010,18 @@ export async function sendVerificationCode(
   }
 
   return res;
+}
+
+/**
+ * The password reset link, by email only.
+ *
+ * Like the verification code above it writes nothing into the account and
+ * ignores `notifyEmail`: the person asking is locked out, and the link is the
+ * key to the door, so it goes to the address and nowhere a signed in session
+ * could read it.
+ */
+export async function sendPasswordReset(to: string, url: string, minutes: number) {
+  return emailTransport().send(to, forEmail(resetWords({ url, minutes })));
 }
 
 /**
