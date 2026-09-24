@@ -38,7 +38,6 @@ import {
   leadWords,
   personalBookedWords,
   personalCancelledWords,
-  promoWords,
   purchasedWords,
   reminderWords,
   repeatBookedWords,
@@ -707,15 +706,6 @@ export async function notifyPurchased(
 }
 
 /**
- * The opening-week gift, announced.
- *
- * Emailed as well as put in the account, which is the exception to the table
- * above and a deliberate one: this message is the only place the member is told
- * which week the session is for, and they are being told it during the thirty
- * seconds of signing up, when nobody reads anything. It needs to survive in
- * their inbox.
- */
-/**
  * Tell the studio a new member has joined.
  *
  * Emailed to the operations mailbox the moment an address is proved — the same
@@ -860,44 +850,6 @@ export async function notifyGranted(
     },
     grantedWords({ credits: opts.credits }),
     { email: true, push: true, sms: false },
-  );
-}
-
-export async function notifyPromoGranted(
-  userId: string,
-  promo: { credits: number; spendFrom: Date; spendUntil: Date; expiresAt?: Date },
-) {
-  const row = db
-    .select({
-      userId: users.id,
-      name: users.name,
-      email: users.email,
-      phone: users.phone,
-      notifyEmail: users.notifyEmail,
-      notifySms: users.notifySms,
-      locale: users.locale,
-    })
-    .from(users)
-    .where(eq(users.id, userId))
-    .get();
-  if (!row) return 0;
-
-  return deliverPersonal(
-    {
-      ...row,
-      startsAt: new Date(),
-      classEn: "",
-      classEl: "",
-      classKind: "GROUP",
-      guestName: null,
-    },
-    promoWords({
-      credits: promo.credits,
-      from: promo.spendFrom,
-      to: promo.spendUntil,
-      expires: promo.expiresAt,
-    }),
-    { email: true, push: false, sms: false },
   );
 }
 

@@ -112,7 +112,12 @@ async function unverifiedMember(req: NextRequest) {
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  if (OPEN_PATHS.has(pathname) || STATIC.test(pathname)) {
+  if (
+    OPEN_PATHS.has(pathname) ||
+    STATIC.test(pathname) ||
+    /* Instructor portraits on the studio page. */
+    pathname.startsWith("/api/team/photo/")
+  ) {
     return NextResponse.next();
   }
   if (!(await unverifiedMember(req))) return NextResponse.next();

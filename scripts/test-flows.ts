@@ -1875,9 +1875,21 @@ async function main() {
   }
 
   /* ---------------------------------------------------------------- 11 */
-  console.log("\n11. The opening-week free session");
+  console.log("\n11. A batch with a spend window");
   {
-    const P = await import("../src/lib/promo");
+    /* The opening week offer is gone, but the spend window it introduced still
+       governs every pack (usableTo is the pack's own expiry). Tested here with a
+       fixed window of its own. */
+    const { windowAllows } = await import("../src/lib/promo");
+    const { studioWallTimeToInstant: wall } = await import("../src/lib/time");
+    const P = {
+      windowAllows,
+      PROMO: {
+        spendFrom: wall(2026, 9, 14, 0, 0),
+        spendUntil: wall(2026, 9, 30, 23, 59),
+        expiresAt: wall(2026, 9, 30, 23, 59),
+      },
+    };
     const { spendOneCredit, getAvailableCredits: bal } = await import(
       "../src/lib/credits"
     );
@@ -2024,63 +2036,6 @@ async function main() {
       packRow.usableFrom === null,
       { source: packRow.source, usableFrom: packRow.usableFrom },
     );
-
-    /* The grant window: who qualifies. */
-    check(
-      "somebody registering inside the window qualifies",
-      P.activePromo(new Date(P.PROMO.grantFrom.getTime() + 86_400_000)) !== null,
-    );
-    check(
-      "somebody registering before it does not",
-      P.activePromo(new Date(P.PROMO.grantFrom.getTime() - 86_400_000)) === null,
-    );
-    check(
-      "and neither does somebody after it",
-      P.activePromo(new Date(P.PROMO.grantUntil.getTime() + 86_400_000)) === null,
-    );
-
-    /* The dates the studio actually asked for, checked against the constants so
-       a careless edit to promo.ts is caught rather than discovered in September. */
-    const key = (d: Date) =>
-      new Intl.DateTimeFormat("en-CA", {
-        timeZone: STUDIO.timezone,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      }).format(d);
-    check("the week starts Monday 14 September", key(P.PROMO.spendFrom) === "2026-09-14", key(P.PROMO.spendFrom));
-    check("and ends Wednesday 30 September", key(P.PROMO.spendUntil) === "2026-09-30", key(P.PROMO.spendUntil));
-    check("granting stops when October does", key(P.PROMO.grantUntil) === "2026-10-01", key(P.PROMO.grantUntil));
-    /* The one that would go unnoticed: granting must never outlive the window
-       the session can be spent in, or a new account is handed a dead credit. */
-    check(
-      "and never outlives the last class it could buy",
-      P.PROMO.grantUntil.getTime() <= P.PROMO.spendUntil.getTime() + 24 * 60 * 60 * 1000,
-      { grantUntil: key(P.PROMO.grantUntil), spendUntil: key(P.PROMO.spendUntil) },
-    );
-    /* The studio is closed on Sundays, so a window ending on the 20th would
-       promise a day with no classes in it. */
-    check("the last day of the window is not a Sunday", studioDayOfWeek(P.PROMO.spendUntil) !== 0);
-
-    /* The wording has to name the window, or the offer is unusable. */
-    const W = await import("../src/lib/messaging/wording");
-    /* Called the way events.ts calls it, expiry included. The two dates used to
-       be the same evening, so leaving `expires` out still produced the right
-       words; now that the spend deadline outlives the last class by a day, a
-       caller that omits it quietly advertises the wrong date. */
-    const words = W.promoWords({
-      credits: 1,
-      from: P.PROMO.spendFrom,
-      to: P.PROMO.spendUntil,
-      expires: P.PROMO.expiresAt,
-    });
-    check("the message names both dates", /14 September/.test(words.en.body) && /30 September/.test(words.en.body), words.en.body);
-    /* The expiry date has to be in the words, or a member saves the session for
-       a week that no longer accepts it. */
-    check("and says when it expires", /expires on 30 September/.test(words.en.body), words.en.body);
-    /* No em dash: the studio reads one as machine-written. */
-    check("and is written without an em dash", !words.en.body.includes("—") && !words.el.body.includes("—"), words.en.body);
-    check("the Greek version names them too", /Σεπτεμβρίου/.test(words.el.body), words.el.body);
 
     /* Tidy up so a repeat run starts clean. */
     for (const u of [promoUser.id, both.id]) {

@@ -51,7 +51,7 @@ async function assertNoPromo(reg) {
   if ((me.json?.credits ?? 0) > 0) {
     console.error(
       "\n  ! This suite needs the opening-week promo switched off." +
-        "\n    Start the server with:  PROMO_ENABLED=false npx next start -p <port>\n",
+        "\n    Start the server with:  npx next start -p <port>\n",
     );
     process.exit(1);
   }
@@ -120,7 +120,7 @@ const fresh = await member("fresh");
   const p = me.json?.profile ?? me.json;
   check("the studio notices consent is on record", Boolean(p?.serviceOptIn), p);
   check("email is on", p?.notifyEmail === true, p?.notifyEmail);
-  check("SMS is off", p?.notifySms === false, p?.notifySms);
+  check("SMS is on (every channel starts on; one press to turn off)", p?.notifySms === true, p?.notifySms);
   /* Push is not a preference any more: the studio keeps it on. */
   check("push is on and stays on", p?.notifyPush === true, p?.notifyPush);
   check(
@@ -471,7 +471,7 @@ console.log("\n7. Accepting offers opens SMS");
   /* And the same when it is ticked later. */
   const later = await member("later", { marketing: false });
   const before = (await req(later.j, "/api/profile")).json?.profile;
-  check("without offers, SMS starts off", before?.notifySms === false, before);
+  check("without offers, SMS still starts on", before?.notifySms === true, before);
 
   await req(later.j, "/api/profile", {
     method: "PATCH",

@@ -334,7 +334,7 @@ export function PricingGrid({
               ))}
             </ul>
           </div>
-          <div className="grid gap-8 sm:grid-cols-2">
+          <div>
             <div>
               <h3 className="text-[13px] uppercase tracking-widest">
                 {t.pricingPage.privateTitle}
@@ -353,14 +353,6 @@ export function PricingGrid({
               >
                 {t.pricingPage.privateCta}
               </ButtonLink>
-            </div>
-            <div>
-              <h3 className="text-[13px] uppercase tracking-widest">
-                {t.pricingPage.corporateTitle}
-              </h3>
-              <p className="mt-3 text-sm leading-relaxed text-mocha-500">
-                {t.pricingPage.corporateBody}
-              </p>
             </div>
           </div>
         </div>

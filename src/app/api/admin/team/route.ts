@@ -1,14 +1,15 @@
 import { NextResponse } from "next/server";
 import { body, owner } from "@/lib/api-guard";
-import { addTeamMember, listTeam, updateTeamMember } from "@/lib/team";
+import { addTeamMember, deleteTeamMember, listTeam, updateTeamMember } from "@/lib/team";
 
 /**
  * The team, from the desk. The owner's alone: who teaches here is the studio's
  * business, not reception's, and every route here refuses reception rather
  * than merely hiding the tab.
  *
- * DELETE switches somebody off rather than deleting the row: past classes keep
- * their name. PATCH with `active: true` puts them back.
+ * PATCH with `active: false` hides somebody from the site and keeps their
+ * name on past classes; `active: true` puts them back. DELETE removes them for
+ * good (their classes stay, with no instructor until the desk assigns one).
  */
 export const dynamic = "force-dynamic";
 
@@ -63,7 +64,7 @@ export async function DELETE(req: Request) {
   const id = new URL(req.url).searchParams.get("id");
   if (!id) return NextResponse.json({ error: "BAD_REQUEST" }, { status: 400 });
 
-  const result = updateTeamMember(id, { active: false });
+  const result = deleteTeamMember(id);
   if (!result.ok) return NextResponse.json({ error: result.code }, { status: 404 });
   return NextResponse.json({ ok: true, team: listTeam() });
 }

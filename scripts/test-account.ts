@@ -46,7 +46,6 @@ import {
 import {
   bookedWords,
   cancelledWords,
-  promoWords,
   purchasedWords,
   reminderWords,
   verifyWords,
@@ -673,8 +672,6 @@ async function main() {
     purchasedWords({ credits: 1, amountCents: 2000, currency: "EUR", expiresAt: null }),
     reminderWords({ minutes: 120, startsAt: when }),
     reminderWords({ minutes: 90, startsAt: when }),
-    promoWords({ credits: 1, from: when, to: when }),
-    promoWords({ credits: 2, from: when, to: when }),
     verifyWords({ code: "483920", minutes: OTP_TTL_MINUTES }),
   ];
   const dirty = messages

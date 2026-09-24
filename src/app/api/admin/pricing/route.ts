@@ -30,7 +30,10 @@ export async function POST(req: Request) {
   }>(req);
 
   const kind = data?.kind === "FLAT" ? "FLAT" : "PERCENT";
-  const value = Number(data?.value);
+  const rawValue = Number(data?.value);
+  /* Same guard as promo codes: a flat figure under 100 cents was meant as euros. */
+  const value =
+    data?.kind === "FLAT" && rawValue > 0 && rawValue < 100 ? rawValue * 100 : rawValue;
 
   /* Bounds that stop a slip of the finger giving the studio away: at most 90%
      off, and at most €500 off. */

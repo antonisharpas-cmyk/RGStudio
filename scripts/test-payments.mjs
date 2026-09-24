@@ -59,7 +59,7 @@ async function assertNoPromo(reg) {
   if ((me.json?.credits ?? 0) > 0) {
     console.error(
       "\n  ! This suite needs the opening-week promo switched off." +
-        "\n    Start the server with:  PROMO_ENABLED=false npx next start -p <port>\n",
+        "\n    Start the server with:  npx next start -p <port>\n",
     );
     process.exit(1);
   }

@@ -568,80 +568,10 @@ export function reminderWords(a: {
 }
 
 /**
- * "Here is a free session, and here are the dates you can use it."
- *
- * The window is the whole message. A free session a member cannot work out how
- * to spend is worse than no free session, because they try, fail, and conclude
- * the site is broken. So the dates come first and the expiry date comes second,
- * and there is nothing after it: a welcome message that carries on into seat
- * counts and opening hours stops being read before it gets to the part that
- * matters.
- *
- * `expires` defaults to `to` because they are the same day in this campaign, but
- * they answer different questions (the last class it books, versus the last
- * moment it can be spent) and a future offer may separate them.
- *
- * The dates are interpolated and the campaign is never named in words. It said
- * "our opening week" until the offer became a month, at which point the message
- * was describing a week and quoting a month at the member in the same sentence.
- * A campaign whose length is written into the prose is a campaign that has to be
- * translated again every time the studio moves a date.
- */
-export function promoWords(a: {
-  credits: number;
-  from: Date;
-  to: Date;
-  expires?: Date;
-}): Bilingual {
-  const dayEn = (d: Date) =>
-    new Intl.DateTimeFormat("en-GB", {
-      timeZone: STUDIO.timezone,
-      day: "numeric",
-      month: "long",
-    }).format(d);
-  const dayEl = (d: Date) =>
-    new Intl.DateTimeFormat("el-GR", {
-      timeZone: STUDIO.timezone,
-      day: "numeric",
-      month: "long",
-    }).format(d);
-
-  const expires = a.expires ?? a.to;
-  const one = a.credits === 1;
-
-  return {
-    en: {
-      subject:
-        one ? "A free session, on us" : `${a.credits} free sessions, on us`,
-      body:
-        `Welcome to RG Pilates Studio. ${sessionWords(a.credits)} ` +
-        `${one ? "is" : "are"} already in your balance, on the studio.\n\n` +
-        `You can use ${one ? "it" : "them"} for any class from ${dayEn(a.from)} to ` +
-        `${dayEn(a.to)}. ${one ? "The session expires" : "The sessions expire"} on ` +
-        `${dayEn(expires)}, so please book before then.`,
-      url: "/timetable",
-    },
-    el: {
-      subject: one ? "Μια συνεδρία δώρο" : `${a.credits} συνεδρίες δώρο`,
-      body:
-        `Καλώς ήρθατε στο RG Pilates Studio. ${sessionWords(a.credits, "el")} ` +
-        `βρίσκ${one ? "εται" : "ονται"} ήδη στο υπόλοιπό σας, με την ευγενική ` +
-        `προσφορά του στούντιο.\n\n` +
-        `Μπορείτε να ${one ? "τη" : "τις"} χρησιμοποιήσετε σε οποιοδήποτε μάθημα ` +
-        `από τις ${dayEl(a.from)} έως τις ${dayEl(a.to)}. ` +
-        `${one ? "Η συνεδρία λήγει" : "Οι συνεδρίες λήγουν"} στις ` +
-        `${dayEl(expires)}, γι' αυτό κλείστε θέση πριν από τότε.`,
-      url: "/timetable",
-    },
-  };
-}
-
-/**
  * Sessions the desk added for free, told to the member.
  *
  * No price and no invoice, because nothing was paid: a comped or corrected
- * balance is not a sale. Deliberately plainer than the opening-week gift, which
- * is a welcome; this is a quieter "the studio has topped you up".
+ * balance is not a sale. A quiet "the studio has topped you up".
  */
 export function grantedWords(a: { credits: number }): Bilingual {
   const one = a.credits === 1;

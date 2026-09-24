@@ -1,6 +1,6 @@
 import { asc, eq } from "drizzle-orm";
-import { db } from "@/db";
-import { instructors, type Instructor } from "@/db/schema";
+import { db, sqlite } from "@/db";
+import { instructorPhotos, instructors, type Instructor } from "@/db/schema";
 
 /**
  * The team, managed from the desk.
@@ -149,4 +149,66 @@ export function updateTeamMember(id: string, patch: TeamPatch): TeamResult {
     .returning()
     .get();
   return { ok: true, member: row };
+}
+
+/**
+ * Delete an instructor for good.
+ *
+ * Classes point at instructors, so those links are cleared first: future and
+ * past classes they were on keep running and simply show no instructor until
+ * the desk assigns one. Their uploaded photo goes with them. Hiding (active
+ * false) remains the gentler option that keeps their name on past classes.
+ */
+export function deleteTeamMember(id: string): { ok: true } | { ok: false; code: "NOT_FOUND" } {
+  const existing = db.select({ id: instructors.id }).from(instructors).where(eq(instructors.id, id)).get();
+  if (!existing) return { ok: false, code: "NOT_FOUND" };
+  sqlite.transaction(() => {
+    sqlite.prepare("update class_templates set instructor_id = null where instructor_id = ?").run(id);
+    sqlite.prepare("update class_sessions set instructor_id = null where instructor_id = ?").run(id);
+    sqlite.prepare("delete from instructor_photos where instructor_id = ?").run(id);
+    sqlite.prepare("delete from instructors where id = ?").run(id);
+  })();
+  return { ok: true };
+}
+
+export const PHOTO_MAX_BYTES = 600 * 1024;
+export const PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
+
+/** Store an uploaded portrait and point the instructor at it. */
+export function savePhoto(id: string, contentType: string, bytes: Buffer): TeamResult {
+  const existing = db.select().from(instructors).where(eq(instructors.id, id)).get();
+  if (!existing) return { ok: false, code: "NOT_FOUND" };
+  const now = new Date();
+  db.insert(instructorPhotos)
+    .values({ instructorId: id, contentType, data: bytes.toString("base64"), updatedAt: now })
+    .onConflictDoUpdate({
+      target: instructorPhotos.instructorId,
+      set: { contentType, data: bytes.toString("base64"), updatedAt: now },
+    })
+    .run();
+  const row = db
+    .update(instructors)
+    .set({ photoUrl: `/api/team/photo/${id}?v=${now.getTime()}`, editedAt: now })
+    .where(eq(instructors.id, id))
+    .returning()
+    .get();
+  return { ok: true, member: row };
+}
+
+/** Take the uploaded portrait off; the card falls back to the studio mark. */
+export function removePhoto(id: string): TeamResult {
+  const existing = db.select().from(instructors).where(eq(instructors.id, id)).get();
+  if (!existing) return { ok: false, code: "NOT_FOUND" };
+  db.delete(instructorPhotos).where(eq(instructorPhotos.instructorId, id)).run();
+  const row = db
+    .update(instructors)
+    .set({ photoUrl: null, editedAt: new Date() })
+    .where(eq(instructors.id, id))
+    .returning()
+    .get();
+  return { ok: true, member: row };
+}
+
+export function readPhoto(id: string) {
+  return db.select().from(instructorPhotos).where(eq(instructorPhotos.instructorId, id)).get();
 }

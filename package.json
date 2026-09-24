@@ -26,7 +26,6 @@
     "test:payments": "node scripts/test-payments.mjs",
     "test:desk": "node scripts/test-desk.mjs",
     "test:notify": "node scripts/test-notify.mjs",
-    "test:promo": "node scripts/test-promo.mjs",
     "test:smtp": "tsx scripts/test-smtp.mts",
     "test:reminders": "tsx scripts/test-reminders.mts",
     "email:test": "tsx scripts/test-email.mts",

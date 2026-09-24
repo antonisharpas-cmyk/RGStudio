@@ -153,7 +153,11 @@ export function createPromoCode(args: {
   const code = normaliseCode(args.code);
   if (!/^[A-Z0-9]{3,32}$/.test(code)) return { ok: false, code: "BAD_CODE" };
 
-  const value = Math.round(Number(args.value));
+  /* A flat discount is stored in cents. A figure under 100 can only be euros
+     typed without the conversion (nobody runs a 10 cent code), so it is read
+     as euros rather than silently becoming cents. */
+  const rawValue = Math.round(Number(args.value));
+  const value = args.kind === "FLAT" && rawValue > 0 && rawValue < 100 ? rawValue * 100 : rawValue;
   const sane =
     Number.isFinite(value) &&
     value > 0 &&

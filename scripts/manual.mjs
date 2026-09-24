@@ -1,7 +1,7 @@
 /**
  * Builds docs/RG-pilates-desk-manual.pdf from docs/manual/manual.html.
  *
- *   npm run build && PROMO_ENABLED=false npx next start -p 3100
+ *   npm run build && npx next start -p 3100
  *   npm run manual -- http://localhost:3100
  *
  * Three jobs, in order: take every screenshot the manual refers to against a

@@ -80,8 +80,6 @@ services:
         # before the first build, not after. Set it to the custom domain from the
         # start if there is going to be one.
         sync: false
-      - key: PROMO_ENABLED
-        value: "false"
       # Nothing to set for the cache buster: `next.config.ts` reads Render's own
       # RENDER_GIT_COMMIT and stamps it onto every asset request, so each deploy
       # gets its own asset URLs. Named here only so nobody wonders where the

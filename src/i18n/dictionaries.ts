@@ -106,7 +106,7 @@ export const en = {
     intro: {
       eyebrow: "The studio",
       title: "Embrace your uniqueness.",
-      body: "RG Pilates Studio is a reformer studio in the heart of Larnaca. Every session is sixty minutes on the reformer, in a calm, light filled room built for focus. Classes are small so your instructor can actually see you, correct you, and progress you, whatever your starting point. Your first class is on us.",
+      body: "RG Pilates Studio is a reformer studio in the heart of Larnaca. Every session is sixty minutes on the reformer, in a calm, light filled room built for focus. Classes are small so your instructor can actually see you, correct you, and progress you, whatever your starting point.",
       cta: "Inside the studio",
       daysLabel: "Days a week",
     },
@@ -384,9 +384,6 @@ export const en = {
     privateBody:
       "Personal and Duet sessions run at 12:00, 13:00 and 14:00, Monday to Thursday. Book yours by the end of the day before and we arrange an instructor for it. A Duet is one session for two people, bought and booked by one of you.",
     privateCta: "Check availability",
-    corporateTitle: "Your first class is free",
-    corporateBody:
-      "New to RG? Your first Reformer class is on us. Create an account, tell us you are new, and the studio adds a complimentary session to your balance so you can try the room before you buy a pack.",
   },
   plans: {
     eyebrow: "Monthly plans",
@@ -852,15 +849,21 @@ export const en = {
     teamBioEl: "Bio (Greek)",
     teamBioRu: "Bio (Russian)",
     teamBioFallback: "Left empty, readers of this language see the English bio.",
-    teamPhoto: "Photo address",
-    teamPhotoHelp:
-      "A link to a portrait, for example /team/maria.jpg after the file is added to the site, or a full https address. Leave empty for the studio mark.",
+    teamDeleted: "Instructor deleted. Their classes stay on the timetable without an instructor until you assign one.",
+    teamDeleteConfirm: "Press again to delete",
+    teamDelete: "Delete",
+    teamPhotoBad: "That photo could not be used. Try a JPEG or PNG image.",
+    teamPhotoRemove: "Remove photo",
+    teamPhotoChange: "Change photo",
+    teamPhotoUpload: "Upload photo",
+    teamPhoto: "Photo",
+    teamPhotoHelp: "A square photo works best. It is cropped to a square and resized automatically.",
     teamActive: "On the site",
     teamHidden: "Hidden",
-    teamRemove: "Remove from the site",
-    teamRestore: "Put back on the site",
+    teamRemove: "Hide from the site",
+    teamRestore: "Show on the site",
     teamSaved: "Saved. The studio page shows the change.",
-    teamRemoved: "Removed from the site.",
+    teamRemoved: "Hidden from the site.",
     teamEmpty: "No instructors yet.",
     teamNameTaken: "There is already an instructor with that name.",
     /* ---- extending a member's sessions ---- */
@@ -1596,7 +1599,7 @@ export const el: typeof en = {
     intro: {
       eyebrow: "Το στούντιο",
       title: "Αγκάλιασε τη μοναδικότητά σου.",
-      body: "Το RG Pilates Studio είναι ένα στούντιο reformer στην καρδιά της Λάρνακας. Κάθε μάθημα διαρκεί εξήντα λεπτά στον reformer, σε έναν ήρεμο, φωτεινό χώρο φτιαγμένο για συγκέντρωση. Τα μαθήματα είναι μικρά, ώστε ο εκπαιδευτής να σε βλέπει, να σε διορθώνει και να σε εξελίσσει, όποιο κι αν είναι το σημείο εκκίνησής σου. Το πρώτο σου μάθημα είναι δώρο.",
+      body: "Το RG Pilates Studio είναι ένα στούντιο reformer στην καρδιά της Λάρνακας. Κάθε μάθημα διαρκεί εξήντα λεπτά στον reformer, σε έναν ήρεμο, φωτεινό χώρο φτιαγμένο για συγκέντρωση. Τα μαθήματα είναι μικρά, ώστε ο εκπαιδευτής να σε βλέπει, να σε διορθώνει και να σε εξελίσσει, όποιο κι αν είναι το σημείο εκκίνησής σου.",
       cta: "Μέσα στο στούντιο",
       daysLabel: "Ημέρες την εβδομάδα",
     },
@@ -1863,9 +1866,6 @@ export const el: typeof en = {
     privateBody:
       "Οι Ατομικές και οι Δυάδες γίνονται στις 12:00, 13:00 και 14:00, Δευτέρα έως Πέμπτη. Κάνε την κράτηση μέχρι το τέλος της προηγούμενης μέρας και κανονίζουμε εκπαιδευτή για αυτή. Μια Δυάδα είναι μία συνεδρία για δύο άτομα, με αγορά και κράτηση από τον ένα από τους δύο.",
     privateCta: "Έλεγχος διαθεσιμότητας",
-    corporateTitle: "Το πρώτο σου μάθημα είναι δώρο",
-    corporateBody:
-      "Πρώτη φορά στο RG; Το πρώτο σου μάθημα Reformer είναι δώρο από εμάς. Δημιούργησε λογαριασμό, πες μας ότι είσαι νέο μέλος, και το στούντιο προσθέτει μια δωρεάν συνεδρία στο υπόλοιπό σου για να δοκιμάσεις τον χώρο πριν αγοράσεις πακέτο.",
   },
   plans: {
     eyebrow: "Μηνιαία πλάνα",
@@ -2294,15 +2294,21 @@ export const el: typeof en = {
     teamBioEl: "Βιογραφικό (Ελληνικά)",
     teamBioRu: "Βιογραφικό (Ρωσικά)",
     teamBioFallback: "Αν μείνει κενό, οι αναγνώστες αυτής της γλώσσας βλέπουν το αγγλικό βιογραφικό.",
-    teamPhoto: "Διεύθυνση φωτογραφίας",
-    teamPhotoHelp:
-      "Σύνδεσμος προς πορτρέτο, για παράδειγμα /team/maria.jpg αφού προστεθεί το αρχείο στη σελίδα, ή πλήρης διεύθυνση https. Άφησέ το κενό για το σήμα του στούντιο.",
+    teamDeleted: "Ο εκπαιδευτής διαγράφηκε. Τα μαθήματά του μένουν στο πρόγραμμα χωρίς εκπαιδευτή μέχρι να ορίσεις κάποιον.",
+    teamDeleteConfirm: "Πάτησε ξανά για διαγραφή",
+    teamDelete: "Διαγραφή",
+    teamPhotoBad: "Η φωτογραφία δεν μπορεί να χρησιμοποιηθεί. Δοκίμασε JPEG ή PNG.",
+    teamPhotoRemove: "Αφαίρεση φωτογραφίας",
+    teamPhotoChange: "Αλλαγή φωτογραφίας",
+    teamPhotoUpload: "Ανέβασμα φωτογραφίας",
+    teamPhoto: "Φωτογραφία",
+    teamPhotoHelp: "Προτιμότερη μια τετράγωνη φωτογραφία. Περικόπτεται και μικραίνει αυτόματα.",
     teamActive: "Στη σελίδα",
     teamHidden: "Κρυφός",
-    teamRemove: "Αφαίρεση από τη σελίδα",
-    teamRestore: "Επαναφορά στη σελίδα",
+    teamRemove: "Απόκρυψη από τη σελίδα",
+    teamRestore: "Εμφάνιση στη σελίδα",
     teamSaved: "Αποθηκεύτηκε. Η σελίδα του στούντιο δείχνει την αλλαγή.",
-    teamRemoved: "Αφαιρέθηκε από τη σελίδα.",
+    teamRemoved: "Κρύφτηκε από τη σελίδα.",
     teamEmpty: "Δεν υπάρχουν εκπαιδευτές ακόμη.",
     teamNameTaken: "Υπάρχει ήδη εκπαιδευτής με αυτό το όνομα.",
     /* ---- επέκταση συνεδριών μέλους ---- */

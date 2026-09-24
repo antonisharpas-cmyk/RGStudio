@@ -9,8 +9,7 @@
  *                 post may be, so the one that takes the most of the screen
  *   1080 x 1920   an Instagram or Facebook story, full screen on a phone
  *
- * `--post` or `--story` for one of them, `--with-offer` to add the opening-week
- * card.
+ * `--post` or `--story` for one of them.
  *
  * ---
  *
@@ -46,7 +45,6 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node
 import { join } from "node:path";
 import { sqlite } from "../src/db";
 import { PACKS } from "../src/lib/packs";
-import { PROMO } from "../src/lib/promo";
 import { STUDIO } from "../src/lib/studio";
 
 const OUT = "docs/social";
@@ -240,16 +238,6 @@ function saturday(slots: Slot[], lang: Lang) {
 const dayName = (d: number, lang: Lang) =>
   (lang === "el" ? DAYS_EL : DAYS_EN)[d];
 
-function promoDates(lang: Lang) {
-  const fmt = (d: Date) =>
-    new Intl.DateTimeFormat(lang === "el" ? "el-GR" : "en-GB", {
-      timeZone: STUDIO.timezone,
-      day: "numeric",
-      month: "long",
-    }).format(d);
-  return { from: fmt(PROMO.spendFrom), to: fmt(PROMO.spendUntil) };
-}
-
 /* ---------------------------------------------------------------- the words */
 
 const T = {
@@ -287,11 +275,6 @@ const T = {
        shape of session and not a class type: they have no row in the timetable
        to take a name from. */
     offerChips: ["Reformer Flow", "Personal 1 to 1", "Duet, for two"],
-    promoKicker: "Opening week",
-    promoTitle: "Your first\nsession is\non us.",
-    promoBody: (from: string, to: string) =>
-      `One free session for every new member, for any class from ${from} to ${to}. Make an account and it is already in your balance.`,
-    promoFoot: (to: string) => `Opening week only. Expires ${to}.`,
     bookLine: "Book online, any class, up to a minute before it starts.",
   },
   el: {
@@ -325,11 +308,6 @@ const T = {
     ],
     classesHead: "Τι κάνουμε",
     offerChips: ["Reformer Flow", "Ατομική 1 προς 1", "Duet, για δύο"],
-    promoKicker: "Εβδομάδα εγκαινίων",
-    promoTitle: "Η πρώτη σου\nσυνεδρία\nκερασμένη.",
-    promoBody: (from: string, to: string) =>
-      `Μία δωρεάν συνεδρία για κάθε νέο μέλος, για οποιοδήποτε μάθημα από ${from} έως ${to}. Άνοιξε λογαριασμό και βρίσκεται ήδη στο υπόλοιπό σου.`,
-    promoFoot: (to: string) => `Μόνο για την εβδομάδα εγκαινίων. Λήγει ${to}.`,
     bookLine: "Κρατήσεις online, για κάθε μάθημα, μέχρι ένα λεπτό πριν αρχίσει.",
   },
 } as const;
@@ -596,29 +574,6 @@ function infoCard(lang: Lang, fmt: Fmt) {
   </div>`, { lang, fmt });
 }
 
-function promoCard(lang: Lang, fmt: Fmt) {
-  const t = T[lang];
-  const { from, to } = promoDates(lang);
-  return shell(
-    `<div class="card">
-      ${header(lang, fmt, true)}
-      <div class="pad" style="margin-top:auto;margin-bottom:auto">
-        <p class="eyebrow" style="text-align:left;color:#C9A227">${t.promoKicker}</p>
-        <h1 style="margin-top:26px;white-space:pre-line;font-size:calc(104px * var(--fs))">${t.promoTitle}</h1>
-        <div class="rule" style="margin:40px 0 0 0"></div>
-        <p class="sub" style="margin-top:34px;font-size:26px;max-width:760px">
-          ${t.promoBody(from, to)}
-        </p>
-        <p class="sub" style="margin-top:22px;font-size:20px;color:#A69B93">
-          ${t.promoFoot(to)}
-        </p>
-      </div>
-      ${footer(lang, fmt)}
-    </div>`,
-    { dark: true, lang, fmt },
-  );
-}
-
 /* ---------------------------------------------------------------------- run */
 
 /**
@@ -630,20 +585,12 @@ function promoCard(lang: Lang, fmt: Fmt) {
  * for years, and an offer price on it outlives the offer by exactly that long,
  * which leaves the studio arguing with somebody holding a screenshot. Offers
  * belong on the website, where they can be switched off.
- *
- * The opening-week card is written and ready and stays out of the default run for
- * the same reason. Ask for it when the studio actually wants to post it:
- *
- *   npm run social -- --with-offer
  */
 const CARDS: { name: string; html: (l: Lang, f: Fmt) => string }[] = [
   { name: "pricing-monthly", html: (l, f) => priceCard(l, f, "month") },
   { name: "pricing-3-months", html: (l, f) => priceCard(l, f, "quarter") },
   { name: "timetable", html: timetableCard },
   { name: "studio", html: infoCard },
-  ...(process.argv.includes("--with-offer")
-    ? [{ name: "opening-week", html: promoCard }]
-    : []),
 ];
 
 /**

@@ -50,6 +50,7 @@ const COLUMNS: Record<string, Column[]> = {
     { name: "photo_url", ddl: "text" },
     { name: "bio_ru", ddl: "text default '' not null" },
     { name: "edited_at", ddl: "integer" },
+    { name: "roster_key", ddl: "text" },
   ],
   purchases: [
     { name: "provider_ref", ddl: "text" },
@@ -210,6 +211,16 @@ const TABLES: { name: string; ddl: string }[] = [
             uses integer default 0 not null,
             created_by text references users(id),
             created_at integer not null
+          )`,
+  },
+  {
+    name: "instructor_photos",
+    ddl: `create table instructor_photos (
+            instructor_id text primary key not null
+              references instructors(id) on delete cascade,
+            content_type text not null,
+            data text not null,
+            updated_at integer not null
           )`,
   },
   {

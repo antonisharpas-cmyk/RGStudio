@@ -100,8 +100,7 @@ export async function POST(req: Request) {
            schema has already refused anything but a literal true. */
         termsAcceptedAt: new Date(),
         marketingOptIn: Boolean(marketingOptIn),
-        /* So the first thing they are sent — the code, and the promo email that
-           follows it — is in the language they signed up in. */
+        /* So the first thing they are sent — the code — is in the language they signed up in. */
         locale,
         /* Reachable on every channel from the start — email, SMS and push all
            on — because the studio would rather a new member hear about their
@@ -175,25 +174,7 @@ export async function POST(req: Request) {
      member's behalf checks the stamp, not the cookie. */
   await createSession(user);
 
-  /**
-   * The opening offer is deliberately NOT granted here.
-   *
-   * It used to be, on the argument that a promise made at registration should be
-   * kept at registration. That argument was wrong, and in a way that is easy to
-   * miss because nothing visibly breaks: this account has not proved it owns the
-   * address yet. Anybody could type somebody else's email, or a made-up one, and
-   * the studio would hand out a session and send a congratulatory message about
-   * it. Unverified accounts are also deleted by the sweep after seven days, so
-   * some of those sessions were granted to records that were about to be thrown
-   * away, and every one of them sat in the studio's figures until it was.
-   *
-   * It moves to the verify route, which runs exactly once per account. Nothing
-   * is lost by the wait: the offer is decided by `promoForJoin(user.createdAt)`,
-   * so registering inside the window and confirming afterwards still qualifies.
-   * See lib/promo.ts.
-   */
-
-  return NextResponse.json({
+    return NextResponse.json({
     ok: true,
     /* The form reads this and goes to /verify rather than to the timetable. */
     verify: true,

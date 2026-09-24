@@ -593,7 +593,9 @@ export function PricingPanel({
             </select>
           </label>
           <label className="block">
-            <span className="label">{d.promoValue}</span>
+            <span className="label">
+              {d.promoValue} ({pKind === "PERCENT" ? "%" : "€"})
+            </span>
             <input
               value={pValue}
               onChange={(e) => setPValue(e.target.value)}
@@ -759,7 +761,7 @@ export function PricingPanel({
           </label>
 
           <label className="block">
-            <span className="label">{d.priceValue}</span>
+            <span className="label">{d.priceValue} ({kind === "PERCENT" ? "%" : "€"})</span>
             <input
               value={value}
               onChange={(e) => setValue(e.target.value)}

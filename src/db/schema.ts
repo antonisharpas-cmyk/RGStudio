@@ -295,6 +295,28 @@ export const instructors = sqliteTable("instructors", {
    * truth and the roster leaves the row alone. See reconcileRoster.
    */
   editedAt: integer("edited_at", { mode: "timestamp" }),
+  /**
+   * Which roster entry (lib/roster.ts) this row started as, if any. The rota
+   * names instructors by this key, so renaming the person from the desk does
+   * not detach them from their hours, and the roster never re-adds somebody
+   * the desk renamed or deleted.
+   */
+  rosterKey: text("roster_key"),
+});
+
+/**
+ * Instructor portraits uploaded from the Team tab, kept in the database like
+ * member photos so they survive deploys without a file store. Served at
+ * /api/team/photo/<instructor id>.
+ */
+export const instructorPhotos = sqliteTable("instructor_photos", {
+  instructorId: text("instructor_id")
+    .primaryKey()
+    .references(() => instructors.id, { onDelete: "cascade" }),
+  contentType: text("content_type").notNull(),
+  /** Base64 of the image bytes. */
+  data: text("data").notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 });
 
 /* --------------------------------------------------------------- Catalogue */

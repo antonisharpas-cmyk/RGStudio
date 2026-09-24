@@ -61,9 +61,10 @@ export const INSTRUCTOR_ROSTER: readonly RosterMember[] = [
  * So this no longer forces the table to match the list above. It does three
  * quiet things:
  *
- *   - an empty table is filled from the roster, so a fresh install has a team;
- *   - a roster member missing from the table is added, so a name written into
- *     `lib/rota.ts` can always be resolved;
+ *   - an empty table is filled from the roster, so a fresh install has a team,
+ *     and each seeded row remembers its roster key;
+ *   - nobody is ever re-added: a roster member the desk renamed or deleted
+ *     stays that way, and the rota finds a renamed one by roster key;
  *   - a roster member the desk has never touched (`edited_at` is null) has its
  *     bio and photo refreshed from here, so a copy fix in the repo still lands.
  *
@@ -81,12 +82,16 @@ export function reconcileRoster(): Map<string, string> {
   if (!hasTable) return map;
 
   sqlite.transaction(() => {
-    const findByName = sqlite.prepare(
-      "select id, edited_at from instructors where name = ? limit 1",
+    /* Rows seeded before roster_key existed: tag them by name, once. */
+    const tag = sqlite.prepare(
+      "update instructors set roster_key = ? where name = ? and roster_key is null",
+    );
+    const byKey = sqlite.prepare(
+      "select id, edited_at from instructors where roster_key = ? limit 1",
     );
     const insert = sqlite.prepare(
-      `insert into instructors (id, name, bio_en, bio_el, bio_ru, photo_url, active, sort_order)
-       values (?, ?, ?, ?, ?, ?, 1, ?)`,
+      `insert into instructors (id, name, bio_en, bio_el, bio_ru, photo_url, active, sort_order, roster_key)
+       values (?, ?, ?, ?, ?, ?, 1, ?, ?)`,
     );
     const refresh = sqlite.prepare(
       `update instructors
@@ -94,13 +99,20 @@ export function reconcileRoster(): Map<string, string> {
         where id = ? and edited_at is null`,
     );
 
+    /* Only a brand new install is filled from the roster. Once the studio has
+       a team, the desk owns it: a roster member renamed or deleted from the
+       Team tab must stay renamed or deleted, not come back on the next boot. */
+    const empty =
+      (sqlite.prepare("select count(*) as n from instructors").get() as { n: number }).n === 0;
+    const anyTagged =
+      (sqlite.prepare("select count(*) as n from instructors where roster_key is not null").get() as { n: number }).n > 0;
+
     for (const m of INSTRUCTOR_ROSTER) {
-      const row = findByName.get(m.name) as
-        | { id: string; edited_at: number | null }
-        | undefined;
+      if (!anyTagged) tag.run(m.name, m.name);
+      const row = byKey.get(m.name) as { id: string; edited_at: number | null } | undefined;
       if (row) {
         refresh.run(m.photoUrl || null, m.sortOrder, m.bioEn, m.bioEl, m.bioRu, row.id);
-      } else {
+      } else if (empty) {
         insert.run(
           crypto.randomUUID(),
           m.name,
@@ -109,14 +121,20 @@ export function reconcileRoster(): Map<string, string> {
           m.bioRu,
           m.photoUrl || null,
           m.sortOrder,
+          m.name,
         );
       }
     }
 
+    /* Every active instructor by name, and roster members also by their
+       roster key, so the rota still finds "Andrea" after a rename. */
     const active = sqlite
-      .prepare("select id, name from instructors where active = 1")
-      .all() as { id: string; name: string }[];
-    for (const r of active) map.set(r.name, r.id);
+      .prepare("select id, name, roster_key from instructors where active = 1")
+      .all() as { id: string; name: string; roster_key: string | null }[];
+    for (const r of active) {
+      map.set(r.name, r.id);
+      if (r.roster_key) map.set(r.roster_key, r.id);
+    }
   })();
 
   return map;
