@@ -107,6 +107,9 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
       if (String(form.get("password") ?? "").length < 8) {
         return stop(t.auth.errPassword);
       }
+      if (form.get("password") !== form.get("passwordConfirm")) {
+        return stop(t.auth.errMismatch);
+      }
       if (form.get("serviceOptIn") !== "on") {
         return stop(t.auth.errServiceConsent);
       }
@@ -252,6 +255,15 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
               autoComplete={isLogin ? "current-password" : "new-password"}
               hint={isLogin ? undefined : t.auth.passwordHint}
             />
+            {!isLogin && (
+              <PasswordField
+                id="passwordConfirm"
+                name="passwordConfirm"
+                label={t.auth.confirmPasswordRegister}
+                minLength={8}
+                autoComplete="new-password"
+              />
+            )}
 
             {!isLogin && (
               <div className="space-y-4 border-t border-mocha-200/70 pt-5">

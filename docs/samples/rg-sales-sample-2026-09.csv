@@ -1,0 +1,44 @@
+﻿Date,Member,Email,Pack,Method,Gross,Net,VAT,VAT %,Currency,Invoice,Sessions
+01/09/2026,Panayiota Loizou,p.loizou@example.com,Duet · for two,Online,45.00,37.82,7.18,19,EUR,2026-0001,1
+01/09/2026,Katerina Nicolaou,katerina.n@example.com,6 months · 2 sessions per week,Online,530.00,445.38,84.62,19,EUR,2026-0002,48
+02/09/2026,Elena Constantinou,elena.c@example.com,Monthly · 2 sessions per week,Cash,110.00,92.44,17.56,19,EUR,2026-0003,8
+05/09/2026,Anna Michael,anna.michael@example.com,Monthly · 4 sessions per week,Online,180.00,151.26,28.74,19,EUR,2026-0004,16
+07/09/2026,Giorgos Demetriou,giorgos.d@example.com,Monthly · 2 sessions per week,Online,110.00,92.44,17.56,19,EUR,2026-0005,8
+08/09/2026,Eleni Savva,eleni.savva@example.com,3 months · 2 sessions per week,Cash,280.00,235.29,44.71,19,EUR,2026-0006,24
+08/09/2026,Natalia Smirnova,natalia.s@example.com,Monthly · 3 sessions per week,Online,150.00,126.05,23.95,19,EUR,2026-0007,12
+08/09/2026,Costas Hadjis,costas.h@example.com,Monthly · 1 session per week,Card at desk,60.00,50.42,9.58,19,EUR,2026-0008,4
+10/09/2026,Katerina Nicolaou,katerina.n@example.com,Monthly · 2 sessions per week,Online,110.00,92.44,17.56,19,EUR,2026-0009,8
+10/09/2026,Sofia Petrou,sofia.petrou@example.com,Monthly · 2 sessions per week,Online,110.00,92.44,17.56,19,EUR,2026-0010,8
+10/09/2026,Natalia Smirnova,natalia.s@example.com,Monthly · 2 sessions per week,Online,110.00,92.44,17.56,19,EUR,2026-0011,8
+12/09/2026,Elena Constantinou,elena.c@example.com,Monthly · 1 session per week,Card at desk,60.00,50.42,9.58,19,EUR,2026-0012,4
+12/09/2026,Elena Constantinou,elena.c@example.com,6 months · 2 sessions per week,Online,530.00,445.38,84.62,19,EUR,2026-0013,48
+12/09/2026,Olga Ivanova,olga.iv@example.com,Monthly · 2 sessions per week,Cash,110.00,92.44,17.56,19,EUR,2026-0014,8
+13/09/2026,Despina Charalambous,despina.ch@example.com,Monthly · 2 sessions per week,Online,110.00,92.44,17.56,19,EUR,2026-0015,8
+13/09/2026,Irina Petrova,irina.p@example.com,Monthly · 3 sessions per week,Online,150.00,126.05,23.95,19,EUR,2026-0016,12
+13/09/2026,Elena Constantinou,elena.c@example.com,Monthly · 2 sessions per week,Cash,110.00,92.44,17.56,19,EUR,2026-0017,8
+13/09/2026,Despina Charalambous,despina.ch@example.com,3 months · 2 sessions per week,Cash,280.00,235.29,44.71,19,EUR,2026-0018,24
+14/09/2026,Christina Pavlou,c.pavlou@example.com,Monthly · 2 sessions per week,Online,110.00,92.44,17.56,19,EUR,2026-0019,8
+15/09/2026,Stella Antoniou,stella.a@example.com,3 months · Unlimited,Online,520.00,436.97,83.03,19,EUR,2026-0020,78
+15/09/2026,Olga Ivanova,olga.iv@example.com,3 months · Unlimited,Card at desk,520.00,436.97,83.03,19,EUR,2026-0021,78
+15/09/2026,Sofia Petrou,sofia.petrou@example.com,Monthly · 2 sessions per week,Online,110.00,92.44,17.56,19,EUR,2026-0022,8
+16/09/2026,Panayiota Loizou,p.loizou@example.com,Monthly · 2 sessions per week,Online,110.00,92.44,17.56,19,EUR,2026-0023,8
+16/09/2026,Panayiota Loizou,p.loizou@example.com,3 months · 2 sessions per week,Online,280.00,235.29,44.71,19,EUR,2026-0024,24
+16/09/2026,Nikos Georgiou,nikos.g@example.com,3 months · 2 sessions per week,Online,280.00,235.29,44.71,19,EUR,2026-0025,24
+16/09/2026,Panayiota Loizou,p.loizou@example.com,Monthly · 1 session per week,Online,60.00,50.42,9.58,19,EUR,2026-0026,4
+17/09/2026,Elena Constantinou,elena.c@example.com,6 months · 2 sessions per week,Cash,530.00,445.38,84.62,19,EUR,2026-0027,48
+17/09/2026,Natalia Smirnova,natalia.s@example.com,3 months · 2 sessions per week,Online,280.00,235.29,44.71,19,EUR,2026-0028,24
+17/09/2026,Natalia Smirnova,natalia.s@example.com,Monthly · 2 sessions per week,Online,110.00,92.44,17.56,19,EUR,2026-0029,8
+17/09/2026,Christina Pavlou,c.pavlou@example.com,3 months · Unlimited,Cash,520.00,436.97,83.03,19,EUR,2026-0030,78
+17/09/2026,Katerina Nicolaou,katerina.n@example.com,Monthly · 2 sessions per week,Online,110.00,92.44,17.56,19,EUR,2026-0031,8
+18/09/2026,Nikos Georgiou,nikos.g@example.com,Duet · for two,Online,45.00,37.82,7.18,19,EUR,2026-0032,1
+18/09/2026,Anna Michael,anna.michael@example.com,Monthly · 2 sessions per week,Cash,110.00,92.44,17.56,19,EUR,2026-0033,8
+19/09/2026,Sofia Petrou,sofia.petrou@example.com,Duet · for two,Online,45.00,37.82,7.18,19,EUR,2026-0034,1
+20/09/2026,Irina Petrova,irina.p@example.com,Monthly · 4 sessions per week,Cash,180.00,151.26,28.74,19,EUR,2026-0035,16
+21/09/2026,Elena Constantinou,elena.c@example.com,Monthly · 2 sessions per week,Online,110.00,92.44,17.56,19,EUR,2026-0036,8
+21/09/2026,Andreas Ioannou,a.ioannou@example.com,6 months · 2 sessions per week,Card at desk,530.00,445.38,84.62,19,EUR,2026-0037,48
+21/09/2026,Nikos Georgiou,nikos.g@example.com,Monthly · 2 sessions per week,Online,110.00,92.44,17.56,19,EUR,2026-0038,8
+22/09/2026,Katerina Nicolaou,katerina.n@example.com,Monthly · 2 sessions per week,Online,110.00,92.44,17.56,19,EUR,2026-0039,8
+22/09/2026,Natalia Smirnova,natalia.s@example.com,Monthly · 1 session per week,Card at desk,60.00,50.42,9.58,19,EUR,2026-0040,4
+22/09/2026,Maria Christodoulou,maria.chr@example.com,Personal · one to one,Cash,30.00,25.21,4.79,19,EUR,2026-0041,1
+23/09/2026,Costas Hadjis,costas.h@example.com,Personal · one to one,Cash,30.00,25.21,4.79,19,EUR,2026-0042,1
+,,,,TOTAL,8045.00,6760.54,1284.46,,,,42

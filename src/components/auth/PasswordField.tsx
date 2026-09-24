@@ -18,13 +18,19 @@ export function PasswordField({
   autoComplete,
   minLength,
   hint,
+  value,
+  onChange,
 }: {
   id: string;
-  name: string;
+  name?: string;
   label: string;
   autoComplete: "current-password" | "new-password";
   minLength?: number;
   hint?: string;
+  /* Given both, the box is controlled (the profile form keeps its own state);
+     left out, it is a plain named field read from FormData. */
+  value?: string;
+  onChange?: (v: string) => void;
 }) {
   const { t } = useI18n();
   const [shown, setShown] = useState(false);
@@ -41,6 +47,9 @@ export function PasswordField({
           type={shown ? "text" : "password"}
           minLength={minLength}
           autoComplete={autoComplete}
+          {...(value !== undefined
+            ? { value, onChange: (e: React.ChangeEvent<HTMLInputElement>) => onChange?.(e.currentTarget.value) }
+            : {})}
           required
           className="input pr-12"
         />

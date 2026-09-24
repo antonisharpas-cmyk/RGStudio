@@ -1081,6 +1081,7 @@ export const ru: typeof en = {
     resetBody: "Не менее 8 символов. Он понадобится при следующем входе.",
     newPassword: "Новый пароль",
     confirmPassword: "Подтвердите новый пароль",
+    confirmPasswordRegister: "Подтвердите пароль",
     showPassword: "Показать пароль",
     hidePassword: "Скрыть пароль",
     errMismatch: "Пароли не совпадают.",
