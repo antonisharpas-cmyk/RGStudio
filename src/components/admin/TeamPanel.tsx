@@ -197,12 +197,8 @@ export function TeamPanel({ onNotice }: { onNotice: (s: string) => void }) {
     }
   }
 
-  /* Two presses, like deleting a pack: the first arms the button. */
+  /* Delete asks first, in a confirmation row under the instructor. */
   async function remove(m: Member) {
-    if (armed !== m.id) {
-      setArmed(m.id);
-      return;
-    }
     setArmed(null);
     setBusy(m.id);
     try {
@@ -386,13 +382,30 @@ export function TeamPanel({ onNotice }: { onNotice: (s: string) => void }) {
                       size="sm"
                       variant="ghost"
                       disabled={busy === m.id}
-                      onClick={() => void remove(m)}
-                      onBlur={() => armed === m.id && setArmed(null)}
-                      className={armed === m.id ? "text-red-700" : "text-clay"}
+                      onClick={() => setArmed(m.id)}
+                      className="text-clay"
                     >
-                      {armed === m.id ? d.teamDeleteConfirm : d.teamDelete}
+                      {d.teamDelete}
                     </Button>
                   </div>
+                  {armed === m.id && (
+                    <div className="flex w-full flex-wrap items-center gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3">
+                      <p className="flex-1 text-[13px] text-red-800">
+                        {d.teamDeleteAsk.replace("{name}", m.name)}
+                      </p>
+                      <Button
+                        size="sm"
+                        disabled={busy === m.id}
+                        onClick={() => void remove(m)}
+                        className="bg-red-700 hover:bg-red-800"
+                      >
+                        {busy === m.id ? t.common.loading : d.teamDeleteYes}
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => setArmed(null)}>
+                        {t.common.cancel}
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
             </li>

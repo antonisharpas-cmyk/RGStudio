@@ -291,10 +291,6 @@ export function PricingPanel({
   const [armedDelete, setArmedDelete] = useState<string | null>(null);
 
   async function deletePack(p: DeskPack) {
-    if (armedDelete !== p.id) {
-      setArmedDelete(p.id);
-      return;
-    }
     setArmedDelete(null);
     setBusy(`pack-${p.id}`);
     try {
@@ -548,13 +544,30 @@ export function PricingPanel({
                       size="sm"
                       variant="ghost"
                       disabled={busy === `pack-${p.id}`}
-                      onClick={() => void deletePack(p)}
-                      onBlur={() => armedDelete === p.id && setArmedDelete(null)}
-                      className={armedDelete === p.id ? "text-red-700" : "text-clay"}
+                      onClick={() => setArmedDelete(p.id)}
+                      className="text-clay"
                     >
-                      {armedDelete === p.id ? d.packDeleteConfirm : d.packDelete}
+                      {d.packDelete}
                     </Button>
                   </span>
+                  {armedDelete === p.id && (
+                    <div className="flex w-full flex-wrap items-center gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3">
+                      <p className="flex-1 text-[13px] text-red-800">
+                        {d.packDeleteAsk.replace("{name}", name(p))}
+                      </p>
+                      <Button
+                        size="sm"
+                        disabled={busy === `pack-${p.id}`}
+                        onClick={() => void deletePack(p)}
+                        className="bg-red-700 hover:bg-red-800"
+                      >
+                        {busy === `pack-${p.id}` ? t.common.loading : d.packDeleteYes}
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => setArmedDelete(null)}>
+                        {t.common.cancel}
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
             </li>
